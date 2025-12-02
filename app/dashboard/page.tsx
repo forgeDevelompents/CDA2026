@@ -87,6 +87,7 @@ export default async function Page() {
               </CardContent>
             </Card>
 
+
             {/* Próximo Evento */}
             <Card className="hover-lift border-[#8CB4E1]/20 bg-white">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
