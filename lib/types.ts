@@ -1,8 +1,11 @@
 export interface User {
   id: string
   email: string
+  username?: string
   nombre: string
   rol: "admin" | "miembro"
+  cargo?: string
+  password?: string
   avatar_url?: string
   created_at: string
   updated_at: string

@@ -23,7 +23,7 @@ import {
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import type { User } from "@/lib/types"
+import type { SessionUser } from "@/lib/auth"
 
 const menuItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -43,7 +43,7 @@ export function Sidebar() {
   const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [logoUrl, setLogoUrl] = useState("/logo-clavaris.jpg")
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<SessionUser | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,16 +55,13 @@ export function Sidebar() {
         setLogoUrl(configData[0].valor)
       }
 
-      // Fetch user
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser()
-      if (authUser) {
-        const { data: userData } = await supabase.from("users").select("*").eq("id", authUser.id).single()
-
-        if (userData) {
-          setUser(userData as User)
-        }
+      // Fetch session user
+      const sessionRes = await fetch("/api/session")
+      if (sessionRes.ok) {
+        const data = await sessionRes.json()
+        setUser(data.user as SessionUser)
+      } else {
+        setUser(null)
       }
     }
 
@@ -72,8 +69,7 @@ export function Sidebar() {
   }, [])
 
   const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
+    await fetch("/api/logout", { method: "POST" })
     router.push("/auth/login")
     router.refresh()
   }
@@ -107,13 +103,23 @@ export function Sidebar() {
         {/* Logo section */}
         <div className="p-6 border-b border-[#2F5E9A]/30">
           <div className="flex items-center justify-center mb-4">
-            <Image
-              src={logoUrl || "/placeholder.svg"}
-              alt="CDA 2026"
-              width={120}
-              height={120}
-              className="object-contain"
-            />
+            <div className="relative group">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#8CB4E1] to-[#2F5E9A] opacity-30 blur-xl group-hover:opacity-50 transition-opacity duration-500" />
+
+              <div className="relative w-32 h-32 rounded-full bg-white p-3 shadow-[0_0_25px_rgba(140,180,225,0.35),0_0_40px_rgba(47,94,154,0.25)] ring-4 ring-white/15 group-hover:shadow-[0_0_35px_rgba(140,180,225,0.55),0_0_55px_rgba(47,94,154,0.35)] group-hover:scale-105 transition-all duration-500">
+                <div className="absolute inset-2 rounded-full border-2 border-[#8CB4E1]/30" />
+                <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
+                  <Image
+                    src={logoUrl || "/placeholder.svg"}
+                    alt="CDA 2026"
+                    width={120}
+                    height={120}
+                    className="object-contain p-2"
+                  />
+                </div>
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-12 bg-gradient-to-b from-white/40 to-transparent rounded-full blur-md" />
+              </div>
+            </div>
           </div>
           {user && (
             <div className="text-center">

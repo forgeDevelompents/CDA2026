@@ -19,14 +19,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Plus, Pencil, Trash2, Shield } from "lucide-react"
-import type { Norma, User } from "@/lib/types"
+import type { Norma } from "@/lib/types"
+import { useSession } from "@/hooks/use-session"
+import type { SessionUser } from "@/lib/auth"
+import { hasPermission } from "@/lib/permissions"
 
 export default function Page() {
   const [normas, setNormas] = useState<Norma[]>([])
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [currentUser, setCurrentUser] = useState<SessionUser | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingNorma, setEditingNorma] = useState<Norma | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const { user: sessionUser, isLoading: sessionLoading } = useSession()
 
   const [formData, setFormData] = useState({
     titulo: "",
@@ -34,20 +38,15 @@ export default function Page() {
   })
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (!sessionLoading && sessionUser) {
+      setCurrentUser(sessionUser)
+      fetchData()
+    }
+  }, [sessionLoading, sessionUser])
 
   const fetchData = async () => {
     const supabase = createClient()
     setIsLoading(true)
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (user) {
-      const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single()
-      setCurrentUser(userData as User)
-    }
 
     const { data: normasData } = await supabase.from("normas").select("*").order("orden", { ascending: true })
 
@@ -57,6 +56,7 @@ export default function Page() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!canManageNormas) return
     const supabase = createClient()
 
     const normaData = {
@@ -76,6 +76,7 @@ export default function Page() {
   }
 
   const handleDelete = async (id: string) => {
+    if (!canManageNormas) return
     if (!confirm("¿Estás seguro de que quieres eliminar esta norma?")) return
 
     const supabase = createClient()
@@ -100,7 +101,7 @@ export default function Page() {
     })
   }
 
-  const isAdmin = currentUser?.rol === "admin"
+  const canManageNormas = hasPermission(currentUser, "normas:manage")
 
   return (
     <div className="flex min-h-screen bg-[#E7ECF3]">
@@ -113,7 +114,7 @@ export default function Page() {
               <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Normas Internas</h1>
               <p className="text-[#2B2B2B]/70 mt-1">Reglas y directrices del grupo</p>
             </div>
-            {isAdmin && (
+            {canManageNormas && (
               <Dialog
                 open={isDialogOpen}
                 onOpenChange={(open) => {
@@ -191,7 +192,7 @@ export default function Page() {
                           </CardTitle>
                         </div>
                       </div>
-                      {isAdmin && (
+                      {canManageNormas && (
                         <div className="flex gap-1 flex-shrink-0">
                           <Button
                             variant="ghost"

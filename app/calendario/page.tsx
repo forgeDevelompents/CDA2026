@@ -19,14 +19,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Plus, Pencil, Trash2, CalendarIcon, MapPin } from "lucide-react"
-import type { Evento, User } from "@/lib/types"
+import type { Evento } from "@/lib/types"
+import { useSession } from "@/hooks/use-session"
+import type { SessionUser } from "@/lib/auth"
+import { hasPermission } from "@/lib/permissions"
 
 export default function Page() {
   const [eventos, setEventos] = useState<Evento[]>([])
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [currentUser, setCurrentUser] = useState<SessionUser | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingEvento, setEditingEvento] = useState<Evento | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const { user: sessionUser, isLoading: sessionLoading } = useSession()
 
   const [formData, setFormData] = useState({
     titulo: "",
@@ -38,20 +42,15 @@ export default function Page() {
   })
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (!sessionLoading && sessionUser) {
+      setCurrentUser(sessionUser)
+      fetchData()
+    }
+  }, [sessionLoading, sessionUser])
 
   const fetchData = async () => {
     const supabase = createClient()
     setIsLoading(true)
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (user) {
-      const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single()
-      setCurrentUser(userData as User)
-    }
 
     const { data: eventosData } = await supabase.from("eventos").select("*").order("fecha_inicio", { ascending: true })
 
@@ -61,6 +60,7 @@ export default function Page() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!canManageCalendario) return
     const supabase = createClient()
 
     const eventoData = {
@@ -84,6 +84,7 @@ export default function Page() {
   }
 
   const handleDelete = async (id: string) => {
+    if (!canManageCalendario) return
     if (!confirm("¿Estás seguro de que quieres eliminar este evento?")) return
 
     const supabase = createClient()
@@ -116,7 +117,7 @@ export default function Page() {
     })
   }
 
-  const isAdmin = currentUser?.rol === "admin"
+  const canManageCalendario = hasPermission(currentUser, "calendario:manage")
 
   // Separate upcoming and past events
   const now = new Date().toISOString()
@@ -134,7 +135,7 @@ export default function Page() {
               <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Calendario</h1>
               <p className="text-[#2B2B2B]/70 mt-1">Eventos y actividades del grupo</p>
             </div>
-            {isAdmin && (
+            {canManageCalendario && (
               <Dialog
                 open={isDialogOpen}
                 onOpenChange={(open) => {
@@ -272,7 +273,7 @@ export default function Page() {
                             )}
                           </div>
                         </div>
-                        {isAdmin && (
+                        {canManageCalendario && (
                           <div className="flex gap-2">
                             <Button
                               variant="ghost"
@@ -326,7 +327,7 @@ export default function Page() {
                             </div>
                           </div>
                         </div>
-                        {isAdmin && (
+                        {canManageCalendario && (
                           <Button
                             variant="ghost"
                             size="icon"

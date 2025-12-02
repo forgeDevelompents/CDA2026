@@ -19,15 +19,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Plus, Vote, CheckCircle2, XCircle, Clock } from "lucide-react"
-import type { Votacion, OpcionVotacion, Voto, User } from "@/lib/types"
+import type { Votacion, OpcionVotacion, Voto } from "@/lib/types"
+import { useSession } from "@/hooks/use-session"
+import type { SessionUser } from "@/lib/auth"
+import { hasPermission } from "@/lib/permissions"
 
 export default function Page() {
   const [votaciones, setVotaciones] = useState<Votacion[]>([])
   const [opciones, setOpciones] = useState<Record<string, OpcionVotacion[]>>({})
   const [votos, setVotos] = useState<Voto[]>([])
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [currentUser, setCurrentUser] = useState<SessionUser | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const { user: sessionUser, isLoading: sessionLoading } = useSession()
 
   const [formData, setFormData] = useState({
     titulo: "",
@@ -36,20 +40,15 @@ export default function Page() {
   })
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (!sessionLoading && sessionUser) {
+      setCurrentUser(sessionUser)
+      fetchData()
+    }
+  }, [sessionLoading, sessionUser])
 
   const fetchData = async () => {
     const supabase = createClient()
     setIsLoading(true)
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (user) {
-      const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single()
-      setCurrentUser(userData as User)
-    }
 
     const { data: votacionesData } = await supabase
       .from("votaciones")
@@ -78,6 +77,7 @@ export default function Page() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!canManageVotaciones) return
     const supabase = createClient()
 
     // Create votacion
@@ -133,6 +133,7 @@ export default function Page() {
   }
 
   const handleCerrarVotacion = async (votacionId: string) => {
+    if (!canManageVotaciones) return
     if (!confirm("¿Estás seguro de que quieres cerrar esta votación?")) return
 
     const supabase = createClient()
@@ -169,7 +170,7 @@ export default function Page() {
     setFormData({ ...formData, opciones: newOpciones })
   }
 
-  const isAdmin = currentUser?.rol === "admin"
+  const canManageVotaciones = hasPermission(currentUser, "votaciones:manage")
 
   // Separate active and closed votaciones
   const votacionesActivas = votaciones.filter((v) => v.estado === "activa")
@@ -211,7 +212,7 @@ export default function Page() {
               <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Votaciones</h1>
               <p className="text-[#2B2B2B]/70 mt-1">Sistema de votación del grupo</p>
             </div>
-            {isAdmin && (
+            {canManageVotaciones && (
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                   <Button className="bg-[#2F5E9A] hover:bg-[#1C3A63]">
@@ -309,7 +310,7 @@ export default function Page() {
                             <p className="text-sm text-[#2B2B2B]/70 mt-2">{votacion.descripcion}</p>
                           )}
                         </div>
-                        {isAdmin && (
+                        {canManageVotaciones && (
                           <Button
                             variant="outline"
                             size="sm"

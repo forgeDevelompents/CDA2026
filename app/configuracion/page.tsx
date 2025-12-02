@@ -9,14 +9,30 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Settings, Save } from "lucide-react"
-import type { User, Configuracion, Informacion } from "@/lib/types"
+import type { Configuracion, Informacion } from "@/lib/types"
 import Image from "next/image"
+import { useSession } from "@/hooks/use-session"
+import type { SessionUser } from "@/lib/auth"
+import { hasPermission } from "@/lib/permissions"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import type { User } from "@/lib/types"
 
 export default function Page() {
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [currentUser, setCurrentUser] = useState<SessionUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const { user: sessionUser, isLoading: sessionLoading } = useSession()
+  const [usersData, setUsersData] = useState<User[]>([])
+  const [cargosOptions, setCargosOptions] = useState<string[]>([])
+  const [isUsersLoading, setIsUsersLoading] = useState(true)
+  const [newUser, setNewUser] = useState({
+    nombre: "",
+    username: "",
+    email: "",
+    password: "",
+    cargo: "",
+  })
 
   const [configData, setConfigData] = useState({
     logo_url: "",
@@ -30,31 +46,34 @@ export default function Page() {
   })
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (!sessionLoading && sessionUser) {
+      setCurrentUser(sessionUser)
+
+      // Only roles with config permission can access
+      if (!hasPermission(sessionUser, "config:manage")) {
+        window.location.href = "/dashboard"
+        return
+      }
+
+      fetchData()
+    }
+  }, [sessionLoading, sessionUser])
 
   const fetchData = async () => {
     const supabase = createClient()
     setIsLoading(true)
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (user) {
-      const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single()
-
-      setCurrentUser(userData as User)
-
-      // Only admins can access this page
-      if (userData?.rol !== "admin") {
-        window.location.href = "/dashboard"
-        return
-      }
-    }
+    setIsUsersLoading(true)
 
     const { data: configDataResult, error: configError } = await supabase.from("configuracion").select("*")
 
     const { data: infoDataResult, error: infoError } = await supabase.from("informacion").select("*")
+
+    const { data: usersResult } = await supabase
+      .from("users")
+      .select("id, email, username, nombre, rol, cargo")
+      .order("nombre")
+
+    const { data: cargosResult } = await supabase.from("cargos").select("cargo").order("cargo")
 
     // Map configuration
     const configMap: Record<string, string> = {}
@@ -83,10 +102,15 @@ export default function Page() {
       que_hacemos: infoMap.que_hacemos || "",
     })
 
+    setUsersData((usersResult as User[]) || [])
+    setCargosOptions((cargosResult || []).map((c) => c.cargo).filter(Boolean))
+
     setIsLoading(false)
+    setIsUsersLoading(false)
   }
 
   const handleSaveConfig = async () => {
+    if (!hasPermission(currentUser, "config:manage")) return
     const supabase = createClient()
     setIsSaving(true)
     setMessage(null)
@@ -118,6 +142,50 @@ export default function Page() {
     }
   }
 
+  const handleUpdateCargo = async (userId: string, cargo: string) => {
+    if (!hasPermission(currentUser, "config:manage")) return
+    const supabase = createClient()
+    const { error } = await supabase.from("users").update({ cargo }).eq("id", userId)
+    if (error) {
+      setMessage({ type: "error", text: "Error al actualizar cargo" })
+      return
+    }
+    setUsersData((prev) => prev.map((u) => (u.id === userId ? { ...u, cargo } : u)))
+    setMessage({ type: "success", text: "Cargo actualizado" })
+  }
+
+  const handleCreateUser = async () => {
+    if (!hasPermission(currentUser, "config:manage")) return
+    const supabase = createClient()
+    setMessage(null)
+
+    if (!newUser.nombre || !newUser.username || !newUser.email || !newUser.password) {
+      setMessage({ type: "error", text: "Completa nombre, usuario, email y contraseña" })
+      return
+    }
+
+    const generatedId = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : undefined
+
+    const { error } = await supabase.from("users").insert({
+      id: generatedId,
+      nombre: newUser.nombre,
+      username: newUser.username,
+      email: newUser.email,
+      password: newUser.password,
+      rol: "miembro",
+      cargo: newUser.cargo || null,
+    })
+
+    if (error) {
+      setMessage({ type: "error", text: `Error al crear usuario: ${error.message}` })
+      return
+    }
+
+    setMessage({ type: "success", text: "Usuario creado" })
+    setNewUser({ nombre: "", username: "", email: "", password: "", cargo: "" })
+    fetchData()
+  }
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen bg-[#E7ECF3]">
@@ -129,7 +197,7 @@ export default function Page() {
     )
   }
 
-  if (currentUser?.rol !== "admin") {
+  if (!hasPermission(currentUser, "config:manage")) {
     return null
   }
 
@@ -244,6 +312,136 @@ export default function Page() {
                   onChange={(e) => setInfoData({ ...infoData, que_hacemos: e.target.value })}
                   rows={5}
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Gestión de usuarios */}
+          <Card className="border-[#8CB4E1]/20">
+            <CardHeader>
+              <CardTitle className="text-lg text-[#1C3A63]">Usuarios y Cargos</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-[#1C3A63]">Usuarios existentes</h3>
+                {isUsersLoading ? (
+                  <p className="text-sm text-[#2B2B2B]/60">Cargando usuarios...</p>
+                ) : usersData.length === 0 ? (
+                  <p className="text-sm text-[#2B2B2B]/60">No hay usuarios</p>
+                ) : (
+                  <div className="space-y-2">
+                    {usersData.map((user) => (
+                      <div
+                        key={user.id}
+                        className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-lg border border-[#8CB4E1]/20"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-[#1C3A63] truncate">
+                            {user.nombre} <span className="text-[#2B2B2B]/60">({user.username})</span>
+                          </p>
+                          <p className="text-xs text-[#2B2B2B]/60 truncate">{user.email}</p>
+                          <p className="text-xs text-[#2B2B2B]/60">Rol: {user.rol}</p>
+                        </div>
+                        <div className="w-full sm:w-56">
+                      <Label className="text-xs text-[#2B2B2B]/70">Cargo</Label>
+                          <Select
+                            value={user.cargo || "none"}
+                            onValueChange={(value) => handleUpdateCargo(user.id, value === "none" ? "" : value)}
+                          >
+                            <SelectTrigger className="bg-white">
+                              <SelectValue placeholder="Sin cargo" />
+                            </SelectTrigger>
+                            <SelectContent
+                              position="popper"
+                              className="bg-white border border-[#8CB4E1]/40 shadow-lg rounded-md"
+                            >
+                              <SelectItem value="none">Sin cargo</SelectItem>
+                              {cargosOptions.map((cargo) => (
+                                <SelectItem key={cargo} value={cargo}>
+                                  {cargo}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-2 space-y-3 border-t border-[#8CB4E1]/20">
+                <h3 className="text-sm font-semibold text-[#1C3A63]">Crear nuevo usuario</h3>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="nuevo_nombre">Nombre</Label>
+                    <Input
+                      id="nuevo_nombre"
+                      value={newUser.nombre}
+                      onChange={(e) => setNewUser({ ...newUser, nombre: e.target.value })}
+                      placeholder="Nombre completo"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="nuevo_username">Usuario</Label>
+                    <Input
+                      id="nuevo_username"
+                      value={newUser.username}
+                      onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                      placeholder="usuario"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="nuevo_email">Email</Label>
+                    <Input
+                      id="nuevo_email"
+                      type="email"
+                      value={newUser.email}
+                      onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                      placeholder="correo@ejemplo.com"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="nuevo_password">Contraseña</Label>
+                    <Input
+                      id="nuevo_password"
+                      type="password"
+                      value={newUser.password}
+                      onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                      placeholder="Contraseña"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Cargo</Label>
+                    <Select
+                      value={newUser.cargo || "none"}
+                      onValueChange={(value) => setNewUser({ ...newUser, cargo: value === "none" ? "" : value })}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Sin cargo" />
+                      </SelectTrigger>
+                      <SelectContent
+                        position="popper"
+                        className="bg-white border border-[#8CB4E1]/40 shadow-lg rounded-md"
+                      >
+                        <SelectItem value="none">Sin cargo</SelectItem>
+                        {cargosOptions.map((cargo) => (
+                          <SelectItem key={cargo} value={cargo}>
+                            {cargo}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <Button onClick={handleCreateUser} className="bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                    Crear usuario
+                  </Button>
+                </div>
+                <p className="text-xs text-[#2B2B2B]/60">
+                  Nota: se crea con rol "miembro" y la contraseña se almacena tal cual (sin hash).
+                </p>
               </div>
             </CardContent>
           </Card>

@@ -20,14 +20,18 @@ import {
 } from "@/components/ui/dialog"
 import { Plus, Trash2, Download, FileText, File, ImageIcon } from "lucide-react"
 import type { Documento, User } from "@/lib/types"
+import { useSession } from "@/hooks/use-session"
+import type { SessionUser } from "@/lib/auth"
+import { hasPermission } from "@/lib/permissions"
 
 export default function Page() {
   const [documentos, setDocumentos] = useState<Documento[]>([])
   const [users, setUsers] = useState<User[]>([])
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [currentUser, setCurrentUser] = useState<SessionUser | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [viewMode, setViewMode] = useState<"list" | "grid">("list")
+  const { user: sessionUser, isLoading: sessionLoading } = useSession()
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -36,20 +40,15 @@ export default function Page() {
   })
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (!sessionLoading && sessionUser) {
+      setCurrentUser(sessionUser)
+      fetchData()
+    }
+  }, [sessionLoading, sessionUser])
 
   const fetchData = async () => {
     const supabase = createClient()
     setIsLoading(true)
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (user) {
-      const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single()
-      setCurrentUser(userData as User)
-    }
 
     const { data: documentosData } = await supabase
       .from("documentos")
@@ -65,7 +64,7 @@ export default function Page() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!currentUser) return
+    if (!currentUser || !canManageDocumentos) return
 
     const supabase = createClient()
 
@@ -85,6 +84,7 @@ export default function Page() {
   }
 
   const handleDelete = async (id: string) => {
+    if (!canManageDocumentos) return
     if (!confirm("¿Estás seguro de que quieres eliminar este documento?")) return
 
     const supabase = createClient()
@@ -100,7 +100,7 @@ export default function Page() {
     })
   }
 
-  const isAdmin = currentUser?.rol === "admin"
+  const canManageDocumentos = hasPermission(currentUser, "documentos:manage")
 
   const getFileIcon = (tipo?: string) => {
     if (!tipo) return <File className="h-5 w-5 text-[#2F5E9A]" />
@@ -129,60 +129,62 @@ export default function Page() {
               <Button variant="outline" size="sm" onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}>
                 {viewMode === "list" ? "Vista Tarjetas" : "Vista Lista"}
               </Button>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-[#2F5E9A] hover:bg-[#1C3A63]">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Subir Documento
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle className="text-[#1C3A63]">Subir Documento</DialogTitle>
-                    <DialogDescription>Añade un nuevo documento compartido</DialogDescription>
-                  </DialogHeader>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <Label htmlFor="nombre">Nombre del documento</Label>
-                      <Input
-                        id="nombre"
-                        value={formData.nombre}
-                        onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="descripcion">Descripción</Label>
-                      <Textarea
-                        id="descripcion"
-                        value={formData.descripcion}
-                        onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-                        rows={3}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="url">URL del documento</Label>
-                      <Input
-                        id="url"
-                        type="url"
-                        value={formData.url}
-                        onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                        placeholder="https://ejemplo.com/documento.pdf"
-                        required
-                      />
-                      <p className="text-xs text-[#2B2B2B]/60 mt-1">Introduce la URL del archivo alojado en la nube</p>
-                    </div>
-                    <div className="flex gap-2 pt-4">
-                      <Button type="submit" className="flex-1 bg-[#2F5E9A] hover:bg-[#1C3A63]">
-                        Subir Documento
-                      </Button>
-                      <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                        Cancelar
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
+              {canManageDocumentos && (
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Subir Documento
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="text-[#1C3A63]">Subir Documento</DialogTitle>
+                      <DialogDescription>Añade un nuevo documento compartido</DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                        <Label htmlFor="nombre">Nombre del documento</Label>
+                        <Input
+                          id="nombre"
+                          value={formData.nombre}
+                          onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="descripcion">Descripción</Label>
+                        <Textarea
+                          id="descripcion"
+                          value={formData.descripcion}
+                          onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                          rows={3}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="url">URL del documento</Label>
+                        <Input
+                          id="url"
+                          type="url"
+                          value={formData.url}
+                          onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                          placeholder="https://ejemplo.com/documento.pdf"
+                          required
+                        />
+                        <p className="text-xs text-[#2B2B2B]/60 mt-1">Introduce la URL del archivo alojado en la nube</p>
+                      </div>
+                      <div className="flex gap-2 pt-4">
+                        <Button type="submit" className="flex-1 bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                          Subir Documento
+                        </Button>
+                        <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                          Cancelar
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
           </div>
 
@@ -227,7 +229,7 @@ export default function Page() {
                               <Download className="h-4 w-4" />
                             </a>
                           </Button>
-                          {isAdmin && (
+                          {canManageDocumentos && (
                             <Button
                               variant="ghost"
                               size="icon"
@@ -257,7 +259,7 @@ export default function Page() {
                           {getFileIcon(doc.tipo || undefined)}
                           <CardTitle className="text-base text-[#1C3A63] truncate">{doc.nombre}</CardTitle>
                         </div>
-                        {isAdmin && (
+                        {canManageDocumentos && (
                           <Button
                             variant="ghost"
                             size="icon"

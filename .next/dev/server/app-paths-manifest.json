@@ -1,0 +1,17 @@
+{
+  "/api/login/route": "app/api/login/route.js",
+  "/api/logout/route": "app/api/logout/route.js",
+  "/api/session/route": "app/api/session/route.js",
+  "/asistencias/page": "app/asistencias/page.js",
+  "/auth/login/page": "app/auth/login/page.js",
+  "/calendario/page": "app/calendario/page.js",
+  "/cargos/page": "app/cargos/page.js",
+  "/configuracion/page": "app/configuracion/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/documentos/page": "app/documentos/page.js",
+  "/estadisticas/page": "app/estadisticas/page.js",
+  "/gastos/page": "app/gastos/page.js",
+  "/informacion/page": "app/informacion/page.js",
+  "/normas/page": "app/normas/page.js",
+  "/votaciones/page": "app/votaciones/page.js"
+}

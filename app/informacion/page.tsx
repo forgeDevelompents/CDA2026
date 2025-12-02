@@ -3,26 +3,23 @@ import { createClient } from "@/lib/supabase/server"
 import { Sidebar } from "@/components/sidebar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Info, Building } from "lucide-react"
+import { getSessionUser } from "@/lib/auth"
+import { hasPermission } from "@/lib/permissions"
 
 export default async function Page() {
   const supabase = await createClient()
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
-  if (error || !user) {
+  const sessionUser = await getSessionUser()
+  if (!sessionUser) {
     redirect("/auth/login")
   }
-
-  const { data: userData } = await supabase.from("users").select("rol").eq("id", user.id).single()
 
   const { data: informacion } = await supabase.from("informacion").select("*")
 
   const quienesSomos = informacion?.find((i) => i.seccion === "quienes_somos")?.contenido || ""
   const queHacemos = informacion?.find((i) => i.seccion === "que_hacemos")?.contenido || ""
 
-  const isAdmin = userData?.rol === "admin"
+  const canManageConfig = hasPermission(sessionUser, "config:manage")
 
   return (
     <div className="flex min-h-screen bg-[#E7ECF3]">
@@ -79,7 +76,7 @@ export default async function Page() {
             </Card>
           </div>
 
-          {isAdmin && (
+          {canManageConfig && (
             <Card className="border-[#2F5E9A] bg-[#2F5E9A]/5">
               <CardContent className="pt-6">
                 <p className="text-sm text-[#1C3A63]">

@@ -35,31 +35,19 @@ export default function Page() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = createClient()
     setIsLoading(true)
     setError(null)
 
     try {
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("email")
-        .eq("username", username)
-        .limit(1)
-
-      if (userError || !userData || userData.length === 0) {
-        throw new Error("Usuario no encontrado. Verifica tu nombre de usuario.")
-      }
-
-      const { error } = await supabase.auth.signInWithPassword({
-        email: userData[0].email,
-        password,
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
       })
 
-      if (error) {
-        if (error.message.includes("Invalid login credentials")) {
-          throw new Error("Contraseña incorrecta")
-        }
-        throw error
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.error || "Credenciales incorrectas")
       }
 
       router.push("/dashboard")
@@ -102,7 +90,7 @@ export default function Page() {
             </div>
           </div>
 
-          <Card className="border-[#8CB4E1]/20 shadow-2xl">
+          <Card className="border-[#8CB4E1]/20 shadow-2xl bg-white">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl text-[#1C3A63]">Iniciar Sesión</CardTitle>
               <CardDescription className="text-[#2B2B2B]">Clavaris de la Divina Aurora 2026</CardDescription>
@@ -149,10 +137,6 @@ export default function Page() {
                   >
                     {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
                   </Button>
-
-                  <div className="text-xs text-center text-[#2B2B2B]/60 pt-2 border-t border-[#8CB4E1]/20">
-                    Usuarios de prueba: <strong>admin</strong> / <strong>miembro</strong>
-                  </div>
                 </div>
               </form>
             </CardContent>

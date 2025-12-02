@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/sidebar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, Users, Calendar } from "lucide-react"
 import type { User } from "@/lib/types"
+import { useSession } from "@/hooks/use-session"
 
 export default function Page() {
   const [stats, setStats] = useState({
@@ -18,10 +19,13 @@ export default function Page() {
     totalNormas: 0,
   })
   const [isLoading, setIsLoading] = useState(true)
+  const { isLoading: sessionLoading } = useSession()
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (!sessionLoading) {
+      fetchData()
+    }
+  }, [sessionLoading])
 
   const fetchData = async () => {
     const supabase = createClient()

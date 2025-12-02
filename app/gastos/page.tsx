@@ -21,14 +21,18 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Pencil, Trash2, Receipt } from "lucide-react"
 import type { Gasto, User } from "@/lib/types"
+import { useSession } from "@/hooks/use-session"
+import type { SessionUser } from "@/lib/auth"
+import { hasPermission } from "@/lib/permissions"
 
 export default function Page() {
   const [gastos, setGastos] = useState<Gasto[]>([])
   const [users, setUsers] = useState<User[]>([])
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [currentUser, setCurrentUser] = useState<SessionUser | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingGasto, setEditingGasto] = useState<Gasto | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const { user: sessionUser, isLoading: sessionLoading } = useSession()
 
   const [formData, setFormData] = useState({
     fecha: new Date().toISOString().split("T")[0],
@@ -40,20 +44,15 @@ export default function Page() {
   })
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (!sessionLoading && sessionUser) {
+      setCurrentUser(sessionUser)
+      fetchData()
+    }
+  }, [sessionLoading, sessionUser])
 
   const fetchData = async () => {
     const supabase = createClient()
     setIsLoading(true)
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (user) {
-      const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single()
-      setCurrentUser(userData as User)
-    }
 
     const { data: gastosData } = await supabase.from("gastos").select("*").order("fecha", { ascending: false })
 
@@ -66,6 +65,7 @@ export default function Page() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!canManageGastos) return
     const supabase = createClient()
 
     const gastoData = {
@@ -89,6 +89,7 @@ export default function Page() {
   }
 
   const handleDelete = async (id: string) => {
+    if (!canManageGastos) return
     if (!confirm("¿Estás seguro de que quieres eliminar este gasto?")) return
 
     const supabase = createClient()
@@ -122,7 +123,7 @@ export default function Page() {
   }
 
   const totalGastos = gastos.reduce((sum, g) => sum + Number(g.cantidad), 0)
-  const isAdmin = currentUser?.rol === "admin"
+  const canManageGastos = hasPermission(currentUser, "gastos:manage")
 
   return (
     <div className="flex min-h-screen bg-[#E7ECF3]">
@@ -135,7 +136,7 @@ export default function Page() {
               <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Gastos</h1>
               <p className="text-[#2B2B2B]/70 mt-1">Gestión de gastos del grupo</p>
             </div>
-            {isAdmin && (
+            {canManageGastos && (
               <Dialog
                 open={isDialogOpen}
                 onOpenChange={(open) => {
@@ -276,7 +277,7 @@ export default function Page() {
                         <th className="text-left p-3 text-sm font-semibold text-[#1C3A63]">Categoría</th>
                         <th className="text-right p-3 text-sm font-semibold text-[#1C3A63]">Cantidad</th>
                         <th className="text-left p-3 text-sm font-semibold text-[#1C3A63]">Pagado por</th>
-                        {isAdmin && <th className="text-right p-3 text-sm font-semibold text-[#1C3A63]">Acciones</th>}
+                        {canManageGastos && <th className="text-right p-3 text-sm font-semibold text-[#1C3A63]">Acciones</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -296,7 +297,7 @@ export default function Page() {
                               {Number(gasto.cantidad).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
                             </td>
                             <td className="p-3 text-sm text-[#2B2B2B]">{pagador?.nombre || "-"}</td>
-                            {isAdmin && (
+                            {canManageGastos && (
                               <td className="p-3 text-right">
                                 <div className="flex items-center justify-end gap-2">
                                   <Button

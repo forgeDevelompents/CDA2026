@@ -20,69 +20,36 @@ export async function POST() {
       },
     })
 
-    // Usuario Admin
-    const { data: adminData, error: adminError } = await supabaseAdmin.auth.admin.createUser({
-      email: "admin@cda2026.local",
-      password: "CDA2026admin!",
-      email_confirm: true,
-      user_metadata: {
-        username: "admin",
-        nombre: "Administrador CDA 2026",
-        rol: "admin",
-      },
-    })
-
-    if (adminError && !adminError.message.includes("already registered")) {
-      console.error("Error creando admin:", adminError.message)
-      return NextResponse.json({ error: "Error creando admin", details: adminError.message }, { status: 500 })
-    }
-
-    // Insertar en tabla users
-    if (adminData?.user) {
-      await supabaseAdmin.from("users").upsert({
-        id: adminData.user.id,
+    // Insertar/actualizar usuarios de ejemplo directamente en la tabla users (requiere columna "password")
+    const users = [
+      {
         email: "admin@cda2026.local",
         username: "admin",
         nombre: "Administrador CDA 2026",
         rol: "admin",
-      })
-    }
-
-    // Usuario Miembro
-    const { data: memberData, error: memberError } = await supabaseAdmin.auth.admin.createUser({
-      email: "miembro@cda2026.local",
-      password: "CDA2026member!",
-      email_confirm: true,
-      user_metadata: {
-        username: "miembro",
-        nombre: "Miembro Test",
-        rol: "miembro",
+        password: "CDA2026admin!",
+        cargo: "President",
       },
-    })
-
-    if (memberError && !memberError.message.includes("already registered")) {
-      console.error("Error creando miembro:", memberError.message)
-      return NextResponse.json({ error: "Error creando miembro", details: memberError.message }, { status: 500 })
-    }
-
-    // Insertar en tabla users
-    if (memberData?.user) {
-      await supabaseAdmin.from("users").upsert({
-        id: memberData.user.id,
+      {
         email: "miembro@cda2026.local",
         username: "miembro",
         nombre: "Miembro Test",
         rol: "miembro",
-      })
+        password: "CDA2026member!",
+        cargo: "clavari d'honor",
+      },
+    ]
+
+    const { error: upsertError } = await supabaseAdmin.from("users").upsert(users, { onConflict: "email" })
+    if (upsertError) {
+      console.error("Error creando usuarios:", upsertError.message)
+      return NextResponse.json({ error: "Error creando usuarios", details: upsertError.message }, { status: 500 })
     }
 
     return NextResponse.json({
       success: true,
       message: "Usuarios predefinidos creados exitosamente",
-      users: [
-        { username: "admin", email: "admin@cda2026.local", password: "CDA2026admin!", rol: "admin" },
-        { username: "miembro", email: "miembro@cda2026.local", password: "CDA2026member!", rol: "miembro" },
-      ],
+      users: users.map((u) => ({ username: u.username, email: u.email, password: u.password, rol: u.rol })),
     })
   } catch (error) {
     console.error("Error:", error)

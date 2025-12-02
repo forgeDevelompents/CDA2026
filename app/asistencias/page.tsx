@@ -7,29 +7,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, XCircle, HelpCircle, Calendar, Users } from "lucide-react"
 import type { Evento, Asistencia, User } from "@/lib/types"
+import { useSession } from "@/hooks/use-session"
+import type { SessionUser } from "@/lib/auth"
 
 export default function Page() {
   const [eventos, setEventos] = useState<Evento[]>([])
   const [asistencias, setAsistencias] = useState<Asistencia[]>([])
   const [users, setUsers] = useState<User[]>([])
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [currentUser, setCurrentUser] = useState<SessionUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const { user: sessionUser, isLoading: sessionLoading } = useSession()
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (!sessionLoading && sessionUser) {
+      setCurrentUser(sessionUser)
+      fetchData()
+    }
+  }, [sessionLoading, sessionUser])
 
   const fetchData = async () => {
     const supabase = createClient()
     setIsLoading(true)
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (user) {
-      const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single()
-      setCurrentUser(userData as User)
-    }
 
     const { data: eventosData } = await supabase.from("eventos").select("*").order("fecha_inicio", { ascending: true })
 
