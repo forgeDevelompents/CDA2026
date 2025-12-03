@@ -71,20 +71,20 @@ export default function Page() {
             <div className="relative group">
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#32d2ff] to-[#7c7dff] opacity-30 blur-3xl group-hover:opacity-50 transition-opacity duration-500" />
 
-              <div className="relative w-52 h-52 rounded-full bg-white/5 p-4 shadow-[0_0_40px_rgba(50,210,255,0.35),0_0_70px_rgba(124,125,255,0.25)] ring-4 ring-white/10 group-hover:shadow-[0_0_60px_rgba(50,210,255,0.5),0_0_90px_rgba(124,125,255,0.35)] group-hover:scale-105 transition-all duration-500 animate-in zoom-in">
-                <div className="absolute inset-2 rounded-full border border-white/20" />
+              <div className="relative w-48 h-48 rounded-full bg-white/8 p-1.5 shadow-[0_0_30px_rgba(50,210,255,0.28),0_0_50px_rgba(124,125,255,0.25)] ring-4 ring-white/10 group-hover:shadow-[0_0_45px_rgba(50,210,255,0.4),0_0_70px_rgba(124,125,255,0.35)] group-hover:scale-105 transition-all duration-500 animate-in zoom-in">
+                <div className="absolute inset-1 rounded-full border border-white/14" />
 
-                <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white/10">
+                <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white/5">
                   <Image
                     src={logoUrl || "/placeholder.svg"}
                     alt="CDA 2026 Logo"
-                    width={160}
-                    height={160}
-                    className="object-contain p-2"
+                    width={192}
+                    height={192}
+                    className="object-cover h-full w-full rounded-full mix-blend-screen"
                   />
                 </div>
 
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-32 h-16 bg-gradient-to-b from-white/30 to-transparent rounded-full blur-md" />
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-14 bg-gradient-to-b from-white/30 to-transparent rounded-full blur-md" />
               </div>
             </div>
           </div>

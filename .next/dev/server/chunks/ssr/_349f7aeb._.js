@@ -113,7 +113,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$
 function Card({ className, ...props }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         "data-slot": "card",
-        className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])('bg-card/80 text-card-foreground flex flex-col gap-6 rounded-2xl border border-white/10 py-6 shadow-[0_10px_40px_rgba(6,10,20,0.35)] backdrop-blur-xl', className),
+        className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])('bg-card/90 text-white flex flex-col gap-6 rounded-2xl border border-white/10 py-6 shadow-[0_10px_40px_rgba(6,10,20,0.45)] backdrop-blur-xl', className),
         ...props
     }, void 0, false, {
         fileName: "[project]/components/ui/card.tsx",
@@ -356,23 +356,23 @@ function Page() {
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "relative w-52 h-52 rounded-full bg-white/5 p-4 shadow-[0_0_40px_rgba(50,210,255,0.35),0_0_70px_rgba(124,125,255,0.25)] ring-4 ring-white/10 group-hover:shadow-[0_0_60px_rgba(50,210,255,0.5),0_0_90px_rgba(124,125,255,0.35)] group-hover:scale-105 transition-all duration-500 animate-in zoom-in",
+                                        className: "relative w-48 h-48 rounded-full bg-white/8 p-1.5 shadow-[0_0_30px_rgba(50,210,255,0.28),0_0_50px_rgba(124,125,255,0.25)] ring-4 ring-white/10 group-hover:shadow-[0_0_45px_rgba(50,210,255,0.4),0_0_70px_rgba(124,125,255,0.35)] group-hover:scale-105 transition-all duration-500 animate-in zoom-in",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "absolute inset-2 rounded-full border border-white/20"
+                                                className: "absolute inset-1 rounded-full border border-white/14"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/auth/login/page.tsx",
                                                 lineNumber: 75,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white/10",
+                                                className: "relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white/5",
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                                                     src: logoUrl || "/placeholder.svg",
                                                     alt: "CDA 2026 Logo",
-                                                    width: 160,
-                                                    height: 160,
-                                                    className: "object-contain p-2"
+                                                    width: 192,
+                                                    height: 192,
+                                                    className: "object-cover h-full w-full rounded-full mix-blend-screen"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/auth/login/page.tsx",
                                                     lineNumber: 78,
@@ -384,7 +384,7 @@ function Page() {
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "absolute top-4 left-1/2 -translate-x-1/2 w-32 h-16 bg-gradient-to-b from-white/30 to-transparent rounded-full blur-md"
+                                                className: "absolute top-4 left-1/2 -translate-x-1/2 w-28 h-14 bg-gradient-to-b from-white/30 to-transparent rounded-full blur-md"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/auth/login/page.tsx",
                                                 lineNumber: 87,
