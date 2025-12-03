@@ -348,20 +348,22 @@ export default function Page() {
                             value={user.cargo || "none"}
                             onValueChange={(value) => handleUpdateCargo(user.id, value === "none" ? "" : value)}
                           >
-                            <SelectTrigger className="bg-white">
-                              <SelectValue placeholder="Sin cargo" />
-                            </SelectTrigger>
-                            <SelectContent
-                              position="popper"
-                              className="bg-white border border-[#8CB4E1]/40 shadow-lg rounded-md"
-                            >
-                              <SelectItem value="none">Sin cargo</SelectItem>
-                              {cargosOptions.map((cargo) => (
-                                <SelectItem key={cargo} value={cargo}>
-                                  {cargo}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
+                          <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                            <SelectValue placeholder="Sin cargo" />
+                          </SelectTrigger>
+                          <SelectContent
+                            position="popper"
+                            className="bg-[#0a1224] text-white border border-white/10 shadow-lg rounded-md"
+                          >
+                            <SelectItem value="none" className="text-white">
+                              Sin cargo
+                            </SelectItem>
+                            {cargosOptions.map((cargo) => (
+                              <SelectItem key={cargo} value={cargo} className="text-white">
+                                {cargo}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
                           </Select>
                         </div>
                       </div>
@@ -417,16 +419,18 @@ export default function Page() {
                       value={newUser.cargo || "none"}
                       onValueChange={(value) => setNewUser({ ...newUser, cargo: value === "none" ? "" : value })}
                     >
-                      <SelectTrigger className="bg-white">
+                      <SelectTrigger className="bg-white/5 border-white/10 text-white">
                         <SelectValue placeholder="Sin cargo" />
                       </SelectTrigger>
                       <SelectContent
                         position="popper"
-                        className="bg-white border border-[#8CB4E1]/40 shadow-lg rounded-md"
+                        className="bg-[#0a1224] text-white border border-white/10 shadow-lg rounded-md"
                       >
-                        <SelectItem value="none">Sin cargo</SelectItem>
+                        <SelectItem value="none" className="text-white">
+                          Sin cargo
+                        </SelectItem>
                         {cargosOptions.map((cargo) => (
-                          <SelectItem key={cargo} value={cargo}>
+                          <SelectItem key={cargo} value={cargo} className="text-white">
                             {cargo}
                           </SelectItem>
                         ))}
