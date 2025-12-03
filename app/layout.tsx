@@ -36,7 +36,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${inter.className} antialiased`}>
+      <body
+        className={`${inter.className} antialiased bg-gradient-to-br from-[#0b1220] via-[#0f1f37] to-[#0b1220] text-white`}
+      >
         {children}
         <Analytics />
       </body>

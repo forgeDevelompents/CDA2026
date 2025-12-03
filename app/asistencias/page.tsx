@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Sidebar } from "@/components/sidebar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, XCircle, HelpCircle, Calendar, Users } from "lucide-react"
 import type { Evento, Asistencia, User } from "@/lib/types"
@@ -88,53 +87,56 @@ export default function Page() {
   const pastEvents = eventos.filter((e) => e.fecha_inicio < now)
 
   return (
-    <div className="flex min-h-screen bg-[#E7ECF3]">
+    <div className="flex min-h-screen bg-gradient-to-br from-[#0a1224] via-[#0f1c36] to-[#090f1c] text-white">
       <Sidebar />
 
       <main className="flex-1 lg:ml-64 p-4 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
-          <div>
-            <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Asistencias</h1>
-            <p className="text-[#2B2B2B]/70 mt-1">Confirma tu asistencia a los eventos</p>
-          </div>
+        <div className="max-w-7xl mx-auto space-y-8">
+          <header className="flow-in">
+            <p className="uppercase text-xs tracking-[0.2em] text-[#5ee1ff]">Eventos</p>
+            <h1 className="text-3xl font-bold text-white text-balance">Asistencias</h1>
+            <p className="text-slate-300 mt-1">Confirma tu asistencia a los eventos</p>
+          </header>
 
           {isLoading ? (
-            <p className="text-center text-[#2B2B2B]/60 py-8">Cargando eventos...</p>
+            <p className="text-center text-slate-400">Cargando eventos...</p>
           ) : (
             <>
-              {/* Próximos Eventos */}
               {upcomingEvents.length > 0 && (
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold text-[#1C3A63]">Próximos Eventos</h2>
-                  {upcomingEvents.map((evento) => {
-                    const userAsistencia = getUserAsistencia(evento.id)
-                    const asistentes = getAsistentes(evento.id)
+                <section className="band p-4 md:p-6 space-y-4 flow-in">
+                  <div className="flex items-center gap-2 text-sm text-slate-300">
+                    <Calendar className="h-5 w-5 text-[#5ee1ff]" />
+                    Próximos eventos
+                  </div>
+                  <div className="space-y-3">
+                    {upcomingEvents.map((evento, idx) => {
+                      const userAsistencia = getUserAsistencia(evento.id)
+                      const asistentes = getAsistentes(evento.id)
 
-                    return (
-                      <Card key={evento.id} className="border-[#8CB4E1]/20">
-                        <CardHeader>
+                      return (
+                        <div
+                          key={evento.id}
+                          className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3 flow-in"
+                          style={{ animationDelay: `${0.04 * idx}s` }}
+                        >
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                            <div className="flex-1">
-                              <CardTitle className="text-xl text-[#1C3A63] flex items-center gap-2 text-balance">
-                                <Calendar className="h-5 w-5 text-[#2F5E9A]" />
-                                {evento.titulo}
-                              </CardTitle>
-                              <p className="text-sm text-[#2B2B2B]/70 mt-2">
+                            <div className="flex-1 space-y-1">
+                              <p className="text-xs uppercase tracking-[0.2em] text-[#5ee1ff]">Evento</p>
+                              <h3 className="text-xl font-semibold text-white">{evento.titulo}</h3>
+                              <p className="text-sm text-slate-300">
                                 {new Date(evento.fecha_inicio).toLocaleString("es-ES", {
                                   dateStyle: "medium",
                                   timeStyle: "short",
                                 })}
                               </p>
-                              {evento.ubicacion && <p className="text-sm text-[#2B2B2B]/70">{evento.ubicacion}</p>}
+                              {evento.ubicacion && <p className="text-sm text-slate-300">{evento.ubicacion}</p>}
                             </div>
                             <div className="flex gap-2 flex-wrap sm:flex-nowrap">
                               <Button
                                 size="sm"
                                 variant={userAsistencia?.estado === "asistire" ? "default" : "outline"}
                                 onClick={() => handleConfirmarAsistencia(evento.id, "asistire")}
-                                className={
-                                  userAsistencia?.estado === "asistire" ? "bg-green-600 hover:bg-green-700" : ""
-                                }
+                                className={userAsistencia?.estado === "asistire" ? "bg-[#5ef5b9] text-[#04101c]" : ""}
                               >
                                 <CheckCircle2 className="h-4 w-4 mr-2" />
                                 Asistiré
@@ -143,7 +145,7 @@ export default function Page() {
                                 size="sm"
                                 variant={userAsistencia?.estado === "no_podre" ? "default" : "outline"}
                                 onClick={() => handleConfirmarAsistencia(evento.id, "no_podre")}
-                                className={userAsistencia?.estado === "no_podre" ? "bg-red-600 hover:bg-red-700" : ""}
+                                className={userAsistencia?.estado === "no_podre" ? "bg-red-500 text-white" : ""}
                               >
                                 <XCircle className="h-4 w-4 mr-2" />
                                 No podré
@@ -152,63 +154,36 @@ export default function Page() {
                                 size="sm"
                                 variant={userAsistencia?.estado === "quizas" ? "default" : "outline"}
                                 onClick={() => handleConfirmarAsistencia(evento.id, "quizas")}
-                                className={
-                                  userAsistencia?.estado === "quizas" ? "bg-yellow-600 hover:bg-yellow-700" : ""
-                                }
+                                className={userAsistencia?.estado === "quizas" ? "bg-[#ffcf66] text-[#0a1224]" : ""}
                               >
                                 <HelpCircle className="h-4 w-4 mr-2" />
                                 Quizás
                               </Button>
                             </div>
                           </div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 className="h-5 w-5 text-green-600" />
-                              <div>
-                                <p className="font-semibold text-[#1C3A63]">
-                                  {getAsistenciaCount(evento.id, "asistire")}
-                                </p>
-                                <p className="text-xs text-[#2B2B2B]/70">Asistirán</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <XCircle className="h-5 w-5 text-red-600" />
-                              <div>
-                                <p className="font-semibold text-[#1C3A63]">
-                                  {getAsistenciaCount(evento.id, "no_podre")}
-                                </p>
-                                <p className="text-xs text-[#2B2B2B]/70">No podrán</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <HelpCircle className="h-5 w-5 text-yellow-600" />
-                              <div>
-                                <p className="font-semibold text-[#1C3A63]">
-                                  {getAsistenciaCount(evento.id, "quizas")}
-                                </p>
-                                <p className="text-xs text-[#2B2B2B]/70">Quizás</p>
-                              </div>
-                            </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <Stat label="Asistirán" value={getAsistenciaCount(evento.id, "asistire")} color="#5ef5b9" />
+                            <Stat label="No podrán" value={getAsistenciaCount(evento.id, "no_podre")} color="#ff6b6b" />
+                            <Stat label="Quizás" value={getAsistenciaCount(evento.id, "quizas")} color="#ffcf66" />
                           </div>
 
                           {asistentes.length > 0 && (
-                            <div className="mt-4 pt-4 border-t border-[#8CB4E1]/20">
-                              <p className="text-sm font-semibold text-[#1C3A63] mb-2 flex items-center gap-2">
+                            <div className="pt-3 border-t border-white/10">
+                              <p className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
                                 <Users className="h-4 w-4" />
                                 Respuestas ({asistentes.length})
                               </p>
                               <div className="flex flex-wrap gap-2">
-                                {asistentes.map((asistente, idx) => (
+                                {asistentes.map((asistente, i) => (
                                   <span
-                                    key={idx}
-                                    className={`px-2 py-1 rounded-md text-xs ${
+                                    key={i}
+                                    className={`px-2 py-1 rounded-full text-xs ${
                                       asistente.estado === "asistire"
-                                        ? "bg-green-100 text-green-800"
+                                        ? "bg-[#5ef5b9]/20 text-[#5ef5b9]"
                                         : asistente.estado === "no_podre"
-                                          ? "bg-red-100 text-red-800"
-                                          : "bg-yellow-100 text-yellow-800"
+                                          ? "bg-red-500/20 text-red-300"
+                                          : "bg-[#ffcf66]/20 text-[#ffcf66]"
                                     }`}
                                   >
                                     {asistente.user}
@@ -217,78 +192,58 @@ export default function Page() {
                               </div>
                             </div>
                           )}
-                        </CardContent>
-                      </Card>
-                    )
-                  })}
-                </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </section>
               )}
 
-              {/* Eventos Pasados */}
               {pastEvents.length > 0 && (
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold text-[#1C3A63]">Eventos Pasados</h2>
-                  {pastEvents.slice(0, 3).map((evento) => {
-                    const asistentes = getAsistentes(evento.id)
-
-                    return (
-                      <Card key={evento.id} className="border-[#8CB4E1]/20 opacity-75">
-                        <CardHeader>
-                          <CardTitle className="text-lg text-[#1C3A63] text-balance">{evento.titulo}</CardTitle>
-                          <p className="text-sm text-[#2B2B2B]/70">
-                            {new Date(evento.fecha_inicio).toLocaleDateString("es-ES", {
-                              dateStyle: "medium",
-                            })}
-                          </p>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid grid-cols-3 gap-4">
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 className="h-5 w-5 text-green-600" />
-                              <div>
-                                <p className="font-semibold text-[#1C3A63]">
-                                  {getAsistenciaCount(evento.id, "asistire")}
-                                </p>
-                                <p className="text-xs text-[#2B2B2B]/70">Asistieron</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <XCircle className="h-5 w-5 text-red-600" />
-                              <div>
-                                <p className="font-semibold text-[#1C3A63]">
-                                  {getAsistenciaCount(evento.id, "no_podre")}
-                                </p>
-                                <p className="text-xs text-[#2B2B2B]/70">No pudieron</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <HelpCircle className="h-5 w-5 text-yellow-600" />
-                              <div>
-                                <p className="font-semibold text-[#1C3A63]">
-                                  {getAsistenciaCount(evento.id, "quizas")}
-                                </p>
-                                <p className="text-xs text-[#2B2B2B]/70">Quizás</p>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )
-                  })}
-                </div>
+                <section className="band p-4 md:p-6 space-y-3 flow-in flow-in-delay-2">
+                  <div className="text-sm text-slate-300">Eventos pasados</div>
+                  <div className="space-y-2">
+                    {pastEvents.slice(0, 3).map((evento, idx) => (
+                      <div
+                        key={evento.id}
+                        className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2 flow-in"
+                        style={{ animationDelay: `${0.03 * idx}s` }}
+                      >
+                        <div className="flex items-center justify-between text-sm text-slate-200">
+                          <span className="font-semibold text-white">{evento.titulo}</span>
+                          <span className="text-slate-400">
+                            {new Date(evento.fecha_inicio).toLocaleDateString("es-ES", { dateStyle: "medium" })}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3 text-sm">
+                          <Stat label="Asistieron" value={getAsistenciaCount(evento.id, "asistire")} color="#5ef5b9" />
+                          <Stat label="No pudieron" value={getAsistenciaCount(evento.id, "no_podre")} color="#ff6b6b" />
+                          <Stat label="Quizás" value={getAsistenciaCount(evento.id, "quizas")} color="#ffcf66" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
               )}
 
               {upcomingEvents.length === 0 && pastEvents.length === 0 && (
-                <Card className="border-[#8CB4E1]/20">
-                  <CardContent className="py-12">
-                    <p className="text-center text-[#2B2B2B]/60">No hay eventos disponibles</p>
-                  </CardContent>
-                </Card>
+                <section className="band p-6 text-center text-slate-400">No hay eventos disponibles</section>
               )}
             </>
           )}
         </div>
       </main>
+    </div>
+  )
+}
+
+function Stat({ label, value, color }: { label: string; value: number; color: string }) {
+  return (
+    <div className="bg-white/5 border border-white/10 rounded-xl p-3">
+      <p className="text-xs uppercase tracking-[0.2em] text-slate-300">{label}</p>
+      <p className="text-xl font-semibold" style={{ color }}>
+        {value}
+      </p>
     </div>
   )
 }

@@ -1,29 +1,18 @@
-"use client"
-
+ "use client"
 import type React from "react"
-
 import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
 import { Sidebar } from "@/components/sidebar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Plus, Pencil, Trash2, Receipt } from "lucide-react"
 import type { Gasto, User } from "@/lib/types"
 import { useSession } from "@/hooks/use-session"
 import type { SessionUser } from "@/lib/auth"
 import { hasPermission } from "@/lib/permissions"
+import { createClient } from "@/lib/supabase/client"
 
 export default function Page() {
   const [gastos, setGastos] = useState<Gasto[]>([])
@@ -65,7 +54,6 @@ export default function Page() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!canManageGastos) return
     const supabase = createClient()
 
     const gastoData = {
@@ -89,7 +77,6 @@ export default function Page() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!canManageGastos) return
     if (!confirm("¿Estás seguro de que quieres eliminar este gasto?")) return
 
     const supabase = createClient()
@@ -126,15 +113,16 @@ export default function Page() {
   const canManageGastos = hasPermission(currentUser, "gastos:manage")
 
   return (
-    <div className="flex min-h-screen bg-[#E7ECF3]">
+    <div className="flex min-h-screen bg-gradient-to-br from-[#0a1224] via-[#0f1c36] to-[#090f1c] text-white">
       <Sidebar />
 
       <main className="flex-1 lg:ml-64 p-4 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 flow-in">
             <div>
-              <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Gastos</h1>
-              <p className="text-[#2B2B2B]/70 mt-1">Gestión de gastos del grupo</p>
+              <p className="uppercase text-xs tracking-[0.2em] text-[#5ee1ff]">Finanzas</p>
+              <h1 className="text-3xl font-bold text-white text-balance">Gastos</h1>
+              <p className="text-slate-300 mt-1">Gestión de gastos del grupo</p>
             </div>
             {canManageGastos && (
               <Dialog
@@ -145,17 +133,15 @@ export default function Page() {
                 }}
               >
                 <DialogTrigger asChild>
-                  <Button className="bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                  <Button className="bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                     <Plus className="h-4 w-4 mr-2" />
                     Añadir Gasto
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto border-white/10 bg-white/5 text-white">
                   <DialogHeader>
-                    <DialogTitle className="text-[#1C3A63]">
-                      {editingGasto ? "Editar Gasto" : "Nuevo Gasto"}
-                    </DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="text-white">{editingGasto ? "Editar Gasto" : "Nuevo Gasto"}</DialogTitle>
+                    <DialogDescription className="text-slate-300">
                       {editingGasto ? "Modifica los datos del gasto" : "Añade un nuevo gasto al registro"}
                     </DialogDescription>
                   </DialogHeader>
@@ -168,6 +154,7 @@ export default function Page() {
                         value={formData.fecha}
                         onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
                         required
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
@@ -177,6 +164,7 @@ export default function Page() {
                         value={formData.concepto}
                         onChange={(e) => setFormData({ ...formData, concepto: e.target.value })}
                         required
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
@@ -189,6 +177,7 @@ export default function Page() {
                         value={formData.cantidad}
                         onChange={(e) => setFormData({ ...formData, cantidad: e.target.value })}
                         required
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
@@ -198,25 +187,24 @@ export default function Page() {
                         value={formData.categoria}
                         onChange={(e) => setFormData({ ...formData, categoria: e.target.value })}
                         placeholder="Ej: Material, Comida, Transporte..."
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
                       <Label htmlFor="pagado_por">Pagado por</Label>
-                      <Select
+                      <select
+                        id="pagado_por"
                         value={formData.pagado_por}
-                        onValueChange={(value) => setFormData({ ...formData, pagado_por: value })}
+                        onChange={(e) => setFormData({ ...formData, pagado_por: e.target.value })}
+                        className="w-full rounded-md bg-white/5 border border-white/10 text-white p-2"
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecciona un miembro" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {users.map((user) => (
-                            <SelectItem key={user.id} value={user.id}>
-                              {user.nombre}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        <option value="">Selecciona un miembro</option>
+                        {users.map((user) => (
+                          <option key={user.id} value={user.id} className="bg-[#0a1224]">
+                            {user.nombre}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <Label htmlFor="notas">Notas</Label>
@@ -225,10 +213,11 @@ export default function Page() {
                         value={formData.notas}
                         onChange={(e) => setFormData({ ...formData, notas: e.target.value })}
                         rows={3}
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div className="flex gap-2 pt-4">
-                      <Button type="submit" className="flex-1 bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                      <Button type="submit" className="flex-1 bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                         {editingGasto ? "Guardar Cambios" : "Añadir Gasto"}
                       </Button>
                       <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -239,95 +228,75 @@ export default function Page() {
                 </DialogContent>
               </Dialog>
             )}
-          </div>
+          </header>
 
-          {/* Total Card */}
-          <Card className="border-[#8CB4E1]/20 bg-gradient-to-br from-[#2F5E9A]/10 to-transparent">
-            <CardHeader>
-              <CardTitle className="text-xl text-[#1C3A63] flex items-center gap-2">
-                <Receipt className="h-5 w-5 text-[#2F5E9A]" />
-                Total Acumulado
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-[#1C3A63]">
+          {/* Resumen */}
+          <div className="band p-4 md:p-6 flow-in">
+            <div className="flex items-center gap-2 text-sm text-slate-300 mb-3">
+              <Receipt className="h-4 w-4 text-[#5ee1ff]" />
+              Resumen
+            </div>
+            <div className="flex items-baseline gap-3">
+              <div className="text-4xl font-bold text-white">
                 {totalGastos.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
               </div>
-              <p className="text-sm text-[#2B2B2B]/60 mt-2">{gastos.length} gastos registrados</p>
-            </CardContent>
-          </Card>
+              <span className="text-slate-400 text-sm">{gastos.length} gastos registrados</span>
+            </div>
+          </div>
 
-          {/* Gastos Table */}
-          <Card className="border-[#8CB4E1]/20">
-            <CardHeader>
-              <CardTitle className="text-lg text-[#1C3A63]">Historial de Gastos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <p className="text-center text-[#2B2B2B]/60 py-8">Cargando gastos...</p>
-              ) : gastos.length === 0 ? (
-                <p className="text-center text-[#2B2B2B]/60 py-8">No hay gastos registrados</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-[#8CB4E1]/20">
-                        <th className="text-left p-3 text-sm font-semibold text-[#1C3A63]">Fecha</th>
-                        <th className="text-left p-3 text-sm font-semibold text-[#1C3A63]">Concepto</th>
-                        <th className="text-left p-3 text-sm font-semibold text-[#1C3A63]">Categoría</th>
-                        <th className="text-right p-3 text-sm font-semibold text-[#1C3A63]">Cantidad</th>
-                        <th className="text-left p-3 text-sm font-semibold text-[#1C3A63]">Pagado por</th>
-                        {canManageGastos && <th className="text-right p-3 text-sm font-semibold text-[#1C3A63]">Acciones</th>}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {gastos.map((gasto) => {
-                        const pagador = users.find((u) => u.id === gasto.pagado_por)
-                        return (
-                          <tr
-                            key={gasto.id}
-                            className="border-b border-[#8CB4E1]/10 hover:bg-[#E7ECF3]/50 transition-colors"
-                          >
-                            <td className="p-3 text-sm text-[#2B2B2B]">
-                              {new Date(gasto.fecha).toLocaleDateString("es-ES")}
-                            </td>
-                            <td className="p-3 text-sm text-[#2B2B2B]">{gasto.concepto}</td>
-                            <td className="p-3 text-sm text-[#2B2B2B]">{gasto.categoria || "-"}</td>
-                            <td className="p-3 text-sm font-semibold text-[#1C3A63] text-right">
-                              {Number(gasto.cantidad).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
-                            </td>
-                            <td className="p-3 text-sm text-[#2B2B2B]">{pagador?.nombre || "-"}</td>
-                            {canManageGastos && (
-                              <td className="p-3 text-right">
-                                <div className="flex items-center justify-end gap-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleEdit(gasto)}
-                                    className="hover:bg-[#2F5E9A]/10"
-                                  >
-                                    <Pencil className="h-4 w-4 text-[#2F5E9A]" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleDelete(gasto.id)}
-                                    className="hover:bg-red-50"
-                                  >
-                                    <Trash2 className="h-4 w-4 text-red-600" />
-                                  </Button>
-                                </div>
-                              </td>
-                            )}
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* Tabla simple */}
+          <div className="band p-4 md:p-6 flow-in">
+            <div className="text-lg font-semibold mb-4">Historial de Gastos</div>
+            {isLoading ? (
+              <p className="text-slate-400">Cargando gastos...</p>
+            ) : gastos.length === 0 ? (
+              <p className="text-slate-400">No hay gastos registrados</p>
+            ) : (
+              <div className="space-y-2">
+                {gastos.map((gasto) => {
+                  const pagador = users.find((u) => u.id === gasto.pagado_por)
+                  return (
+                    <div
+                      key={gasto.id}
+                      className="grid grid-cols-1 sm:grid-cols-6 gap-2 items-center bg-white/5 border border-white/10 rounded-xl p-3"
+                    >
+                      <div className="text-slate-300 text-sm">
+                        {new Date(gasto.fecha).toLocaleDateString("es-ES")}
+                      </div>
+                      <div className="col-span-2 font-semibold text-white">{gasto.concepto}</div>
+                      <div className="text-slate-300 text-sm">{gasto.categoria || "-"}</div>
+                      <div className="text-right font-semibold text-white">
+                        {Number(gasto.cantidad).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
+                      </div>
+                      <div className="flex items-center justify-end gap-2">
+                        <span className="text-slate-300 text-sm">{pagador?.nombre || "-"}</span>
+                        {canManageGastos && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEdit(gasto)}
+                              className="hover:bg-white/10"
+                            >
+                              <Pencil className="h-4 w-4 text-[#5ee1ff]" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDelete(gasto.id)}
+                              className="hover:bg-red-500/10"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-400" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>

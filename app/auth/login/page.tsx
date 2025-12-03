@@ -60,21 +60,21 @@ export default function Page() {
   }
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center p-6 bg-gradient-to-br from-[#1C3A63] via-[#2F5E9A] to-[#1C3A63]">
-      <div className="w-full max-w-md animate-in fade-in duration-500">
+    <div className="flex min-h-screen w-full items-center justify-center p-6 bg-gradient-to-br from-[#0b1220] via-[#0f1f37] to-[#0b1220] relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-10 left-10 w-64 h-64 bg-cyan-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-10 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl" />
+      </div>
+      <div className="w-full max-w-md animate-in fade-in duration-500 relative">
         <div className="flex flex-col gap-6">
           <div className="flex justify-center mb-4">
             <div className="relative group">
-              {/* Sombra exterior difusa */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#8CB4E1] to-[#2F5E9A] opacity-30 blur-xl group-hover:opacity-50 transition-opacity duration-500" />
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#32d2ff] to-[#7c7dff] opacity-30 blur-3xl group-hover:opacity-50 transition-opacity duration-500" />
 
-              {/* Contenedor circular principal con sombras */}
-              <div className="relative w-52 h-52 rounded-full bg-white p-4 shadow-[0_0_30px_rgba(140,180,225,0.4),0_0_60px_rgba(47,94,154,0.3)] ring-4 ring-white/20 group-hover:shadow-[0_0_40px_rgba(140,180,225,0.6),0_0_80px_rgba(47,94,154,0.4)] group-hover:scale-105 transition-all duration-500 animate-in zoom-in">
-                {/* Borde interior decorativo */}
-                <div className="absolute inset-2 rounded-full border-2 border-[#8CB4E1]/30" />
+              <div className="relative w-52 h-52 rounded-full bg-white/5 p-4 shadow-[0_0_40px_rgba(50,210,255,0.35),0_0_70px_rgba(124,125,255,0.25)] ring-4 ring-white/10 group-hover:shadow-[0_0_60px_rgba(50,210,255,0.5),0_0_90px_rgba(124,125,255,0.35)] group-hover:scale-105 transition-all duration-500 animate-in zoom-in">
+                <div className="absolute inset-2 rounded-full border border-white/20" />
 
-                {/* Logo */}
-                <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
+                <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white/10">
                   <Image
                     src={logoUrl || "/placeholder.svg"}
                     alt="CDA 2026 Logo"
@@ -84,22 +84,21 @@ export default function Page() {
                   />
                 </div>
 
-                {/* Brillo superior sutil */}
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-32 h-16 bg-gradient-to-b from-white/40 to-transparent rounded-full blur-md" />
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-32 h-16 bg-gradient-to-b from-white/30 to-transparent rounded-full blur-md" />
               </div>
             </div>
           </div>
 
-          <Card className="border-[#8CB4E1]/20 shadow-2xl bg-white">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl text-[#1C3A63]">Iniciar Sesión</CardTitle>
-              <CardDescription className="text-[#2B2B2B]">Clavaris de la Divina Aurora 2026</CardDescription>
+          <Card className="border-white/10 shadow-2xl bg-[rgba(12,18,32,0.7)] backdrop-blur-xl">
+            <CardHeader className="text-center space-y-1">
+              <CardTitle className="text-2xl text-white tracking-tight">Iniciar Sesión</CardTitle>
+              <CardDescription className="text-slate-300">Clavaris de la Divina Aurora 2026</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin}>
                 <div className="flex flex-col gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="username" className="text-[#1C3A63]">
+                    <Label htmlFor="username" className="text-slate-200">
                       Usuario
                     </Label>
                     <Input
@@ -109,12 +108,12 @@ export default function Page() {
                       required
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="border-[#8CB4E1]/50 focus:border-[#2F5E9A]"
+                      className="border-white/10 bg-white/5 text-white placeholder:text-slate-400 focus:border-[#32d2ff] focus:ring-[#32d2ff]"
                       autoComplete="username"
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="password" className="text-[#1C3A63]">
+                    <Label htmlFor="password" className="text-slate-200">
                       Contraseña
                     </Label>
                     <Input
@@ -123,16 +122,18 @@ export default function Page() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="border-[#8CB4E1]/50 focus:border-[#2F5E9A]"
+                      className="border-white/10 bg-white/5 text-white placeholder:text-slate-400 focus:border-[#32d2ff] focus:ring-[#32d2ff]"
                       autoComplete="current-password"
                     />
                   </div>
                   {error && (
-                    <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-200">{error}</div>
+                    <div className="text-sm text-red-300 bg-red-500/10 p-3 rounded-md border border-red-500/30">
+                      {error}
+                    </div>
                   )}
                   <Button
                     type="submit"
-                    className="w-full bg-[#2F5E9A] hover:bg-[#1C3A63] transition-all duration-300"
+                    className="w-full bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff] transition-all duration-300 font-semibold"
                     disabled={isLoading}
                   >
                     {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}

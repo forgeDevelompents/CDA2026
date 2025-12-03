@@ -5,7 +5,6 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Sidebar } from "@/components/sidebar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -115,15 +114,16 @@ export default function Page() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#E7ECF3]">
+    <div className="flex min-h-screen bg-gradient-to-br from-[#0a1224] via-[#0f1c36] to-[#090f1c] text-white">
       <Sidebar />
 
       <main className="flex-1 lg:ml-64 p-4 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 flow-in">
             <div>
-              <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Documentos</h1>
-              <p className="text-[#2B2B2B]/70 mt-1">Archivos y documentación del grupo</p>
+              <p className="uppercase text-xs tracking-[0.2em] text-[#5ee1ff]">Archivos</p>
+              <h1 className="text-3xl font-bold text-white text-balance">Documentos</h1>
+              <p className="text-slate-300 mt-1">Repositorio compartido del grupo</p>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}>
@@ -132,15 +132,17 @@ export default function Page() {
               {canManageDocumentos && (
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button className="bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                    <Button className="bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                       <Plus className="h-4 w-4 mr-2" />
                       Subir Documento
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-md">
+                  <DialogContent className="max-w-md border-white/10 bg-white/5 text-white">
                     <DialogHeader>
-                      <DialogTitle className="text-[#1C3A63]">Subir Documento</DialogTitle>
-                      <DialogDescription>Añade un nuevo documento compartido</DialogDescription>
+                      <DialogTitle className="text-white">Subir Documento</DialogTitle>
+                      <DialogDescription className="text-slate-300">
+                        Añade un nuevo documento compartido
+                      </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
                       <div>
@@ -150,6 +152,7 @@ export default function Page() {
                           value={formData.nombre}
                           onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                           required
+                          className="bg-white/5 border-white/10 text-white"
                         />
                       </div>
                       <div>
@@ -159,6 +162,7 @@ export default function Page() {
                           value={formData.descripcion}
                           onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
                           rows={3}
+                          className="bg-white/5 border-white/10 text-white"
                         />
                       </div>
                       <div>
@@ -170,11 +174,12 @@ export default function Page() {
                           onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                           placeholder="https://ejemplo.com/documento.pdf"
                           required
+                          className="bg-white/5 border-white/10 text-white"
                         />
-                        <p className="text-xs text-[#2B2B2B]/60 mt-1">Introduce la URL del archivo alojado en la nube</p>
+                        <p className="text-xs text-slate-300 mt-1">Introduce la URL del archivo alojado en la nube</p>
                       </div>
                       <div className="flex gap-2 pt-4">
-                        <Button type="submit" className="flex-1 bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                        <Button type="submit" className="flex-1 bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                           Subir Documento
                         </Button>
                         <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -186,94 +191,88 @@ export default function Page() {
                 </Dialog>
               )}
             </div>
-          </div>
+          </header>
 
-          {/* Documents Display */}
           {isLoading ? (
-            <p className="text-center text-[#2B2B2B]/60 py-8">Cargando documentos...</p>
+            <p className="text-center text-slate-400">Cargando documentos...</p>
           ) : documentos.length === 0 ? (
-            <Card className="border-[#8CB4E1]/20">
-              <CardContent className="py-12">
-                <p className="text-center text-[#2B2B2B]/60">No hay documentos subidos</p>
-              </CardContent>
-            </Card>
+            <section className="band p-6 text-center text-slate-400">No hay documentos subidos</section>
           ) : viewMode === "list" ? (
-            <Card className="border-[#8CB4E1]/20">
-              <CardHeader>
-                <CardTitle className="text-lg text-[#1C3A63]">Todos los Documentos</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {documentos.map((doc) => {
-                    const uploader = users.find((u) => u.id === doc.subido_por)
+            <section className="band p-4 md:p-6 space-y-3 flow-in">
+              <div className="flex items-center gap-2 text-sm text-slate-300">Todos los documentos</div>
+              <div className="space-y-2">
+                {documentos.map((doc, idx) => {
+                  const uploader = users.find((u) => u.id === doc.subido_por)
 
-                    return (
-                      <div
-                        key={doc.id}
-                        className="flex items-center justify-between p-4 rounded-lg border border-[#8CB4E1]/20 hover:bg-[#E7ECF3]/50 transition-colors"
-                      >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          {getFileIcon(doc.tipo || undefined)}
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-[#1C3A63] truncate">{doc.nombre}</h3>
-                            {doc.descripcion && <p className="text-sm text-[#2B2B2B]/70 truncate">{doc.descripcion}</p>}
-                            <p className="text-xs text-[#2B2B2B]/60 mt-1">
-                              Subido por {uploader?.nombre || "Desconocido"} el{" "}
-                              {new Date(doc.created_at).toLocaleDateString("es-ES")}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex gap-2 flex-shrink-0">
-                          <Button variant="outline" size="icon" asChild>
-                            <a href={doc.url} target="_blank" rel="noopener noreferrer">
-                              <Download className="h-4 w-4" />
-                            </a>
-                          </Button>
-                          {canManageDocumentos && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDelete(doc.id)}
-                              className="hover:bg-red-50"
-                            >
-                              <Trash2 className="h-4 w-4 text-red-600" />
-                            </Button>
-                          )}
+                  return (
+                    <div
+                      key={doc.id}
+                      className="flex items-center justify-between gap-3 bg-white/5 border border-white/10 rounded-xl p-4 flow-in"
+                      style={{ animationDelay: `${0.03 * idx}s` }}
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {getFileIcon(doc.tipo || undefined)}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-white truncate">{doc.nombre}</h3>
+                          {doc.descripcion && <p className="text-sm text-slate-300 truncate">{doc.descripcion}</p>}
+                          <p className="text-xs text-slate-400 mt-1">
+                            Subido por {uploader?.nombre || "Desconocido"} el{" "}
+                            {new Date(doc.created_at).toLocaleDateString("es-ES")}
+                          </p>
                         </div>
                       </div>
-                    )
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+                      <div className="flex gap-2 flex-shrink-0">
+                        <Button variant="outline" size="icon" asChild>
+                          <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                            <Download className="h-4 w-4" />
+                          </a>
+                        </Button>
+                        {canManageDocumentos && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(doc.id)}
+                            className="hover:bg-red-500/10"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-400" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {documentos.map((doc) => {
-                const uploader = users.find((u) => u.id === doc.subido_por)
+            <section className="band p-4 md:p-6 flow-in">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {documentos.map((doc, idx) => {
+                  const uploader = users.find((u) => u.id === doc.subido_por)
 
-                return (
-                  <Card key={doc.id} className="hover-lift border-[#8CB4E1]/20">
-                    <CardHeader className="pb-3">
+                  return (
+                    <div
+                      key={doc.id}
+                      className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-2 flow-in"
+                      style={{ animationDelay: `${0.03 * idx}s` }}
+                    >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                           {getFileIcon(doc.tipo || undefined)}
-                          <CardTitle className="text-base text-[#1C3A63] truncate">{doc.nombre}</CardTitle>
+                          <h3 className="text-base font-semibold text-white truncate">{doc.nombre}</h3>
                         </div>
                         {canManageDocumentos && (
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDelete(doc.id)}
-                            className="h-8 w-8 hover:bg-red-50 flex-shrink-0"
+                            className="hover:bg-red-500/10"
                           >
-                            <Trash2 className="h-4 w-4 text-red-600" />
+                            <Trash2 className="h-4 w-4 text-red-400" />
                           </Button>
                         )}
                       </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {doc.descripcion && <p className="text-sm text-[#2B2B2B]/70 line-clamp-2">{doc.descripcion}</p>}
-                      <div className="text-xs text-[#2B2B2B]/60">
+                      {doc.descripcion && <p className="text-sm text-slate-300 line-clamp-2">{doc.descripcion}</p>}
+                      <div className="text-xs text-slate-400">
                         <p>Subido por {uploader?.nombre || "Desconocido"}</p>
                         <p>{new Date(doc.created_at).toLocaleDateString("es-ES")}</p>
                       </div>
@@ -283,11 +282,11 @@ export default function Page() {
                           Descargar
                         </a>
                       </Button>
-                    </CardContent>
-                  </Card>
-                )
-              })}
-            </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
           )}
         </div>
       </main>

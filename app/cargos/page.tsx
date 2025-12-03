@@ -5,7 +5,6 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Sidebar } from "@/components/sidebar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -113,15 +112,16 @@ export default function Page() {
   const canManageCargos = hasPermission(currentUser, "cargos:manage")
 
   return (
-    <div className="flex min-h-screen bg-[#E7ECF3]">
+    <div className="flex min-h-screen bg-gradient-to-br from-[#0a1224] via-[#0f1c36] to-[#090f1c] text-white">
       <Sidebar />
 
       <main className="flex-1 lg:ml-64 p-4 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 flow-in">
             <div>
-              <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Cargos del Año</h1>
-              <p className="text-[#2B2B2B]/70 mt-1">Organización y responsabilidades</p>
+              <p className="uppercase text-xs tracking-[0.2em] text-[#5ee1ff]">Organización</p>
+              <h1 className="text-3xl font-bold text-white text-balance">Cargos del Año</h1>
+              <p className="text-slate-300 mt-1">Quién hace qué dentro del grupo</p>
             </div>
             {canManageCargos && (
               <Dialog
@@ -132,17 +132,15 @@ export default function Page() {
                 }}
               >
                 <DialogTrigger asChild>
-                  <Button className="bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                  <Button className="bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                     <Plus className="h-4 w-4 mr-2" />
                     Asignar Cargo
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md border-white/10 bg-white/5 text-white">
                   <DialogHeader>
-                    <DialogTitle className="text-[#1C3A63]">
-                      {editingCargo ? "Editar Cargo" : "Nuevo Cargo"}
-                    </DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="text-white">{editingCargo ? "Editar Cargo" : "Nuevo Cargo"}</DialogTitle>
+                    <DialogDescription className="text-slate-300">
                       {editingCargo ? "Modifica la asignación del cargo" : "Asigna un nuevo cargo a un miembro"}
                     </DialogDescription>
                   </DialogHeader>
@@ -155,18 +153,19 @@ export default function Page() {
                         onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
                         placeholder="Ej: Presidente, Secretario, Tesorero..."
                         required
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
                       <Label htmlFor="user_id">Miembro (opcional)</Label>
                       <Select
-                        value={formData.user_id}
-                        onValueChange={(value) => setFormData({ ...formData, user_id: value })}
+                        value={formData.user_id || "none"}
+                        onValueChange={(value) => setFormData({ ...formData, user_id: value === "none" ? "" : value })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white/5 border-white/10 text-white">
                           <SelectValue placeholder="Selecciona un miembro" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-[#0a1224] border-white/10 text-white">
                           <SelectItem value="none">Sin asignar</SelectItem>
                           {users.map((user) => (
                             <SelectItem key={user.id} value={user.id}>
@@ -184,10 +183,11 @@ export default function Page() {
                         onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })}
                         rows={3}
                         placeholder="Responsabilidades o notas adicionales..."
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div className="flex gap-2 pt-4">
-                      <Button type="submit" className="flex-1 bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                      <Button type="submit" className="flex-1 bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                         {editingCargo ? "Guardar Cambios" : "Asignar Cargo"}
                       </Button>
                       <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -198,27 +198,51 @@ export default function Page() {
                 </DialogContent>
               </Dialog>
             )}
-          </div>
+          </header>
 
-          {/* Cargos Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <section className="band p-4 md:p-6 flow-in">
+            <div className="flex flex-wrap gap-6 text-sm text-slate-300">
+              <div>
+                <p className="uppercase text-[10px] tracking-[0.25em] text-[#5ee1ff]">Total cargos</p>
+                <p className="text-2xl font-semibold text-white">{cargos.length}</p>
+              </div>
+              <div>
+                <p className="uppercase text-[10px] tracking-[0.25em] text-[#5ee1ff]">Miembros</p>
+                <p className="text-2xl font-semibold text-white">{users.length}</p>
+              </div>
+              <div>
+                <p className="uppercase text-[10px] tracking-[0.25em] text-[#5ee1ff]">Asignados</p>
+                <p className="text-2xl font-semibold text-white">
+                  {cargos.filter((c) => c.user_id).length}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="band p-4 md:p-6 space-y-3 flow-in flow-in-delay-2">
+            <div className="flex items-center gap-2 text-sm text-slate-300">
+              <UserCircle className="h-5 w-5 text-[#5ee1ff]" />
+              Roles y responsables
+            </div>
             {isLoading ? (
-              <p className="col-span-full text-center text-[#2B2B2B]/60 py-8">Cargando cargos...</p>
+              <p className="text-slate-400">Cargando cargos...</p>
             ) : cargos.length === 0 ? (
-              <p className="col-span-full text-center text-[#2B2B2B]/60 py-8">No hay cargos asignados</p>
+              <p className="text-slate-400">No hay cargos asignados</p>
             ) : (
-              cargos.map((cargo) => {
-                const user = users.find((u) => u.id === cargo.user_id)
-                return (
-                  <Card
-                    key={cargo.id}
-                    className="hover-lift border-[#8CB4E1]/20 bg-gradient-to-br from-white to-[#E7ECF3]/30"
-                  >
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-2">
-                          <UserCircle className="h-5 w-5 text-[#2F5E9A]" />
-                          <CardTitle className="text-lg text-[#1C3A63]">{cargo.cargo}</CardTitle>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                {cargos.map((cargo, idx) => {
+                  const user = users.find((u) => u.id === cargo.user_id)
+                  return (
+                    <div
+                      key={cargo.id}
+                      className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-2 flow-in"
+                      style={{ animationDelay: `${0.04 * idx}s` }}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="space-y-1">
+                          <p className="text-xs uppercase tracking-[0.2em] text-[#5ee1ff]">Cargo</p>
+                          <h3 className="text-lg font-semibold text-white">{cargo.cargo}</h3>
+                          <p className="text-sm text-slate-300">{user ? user.nombre : "Sin asignar"}</p>
                         </div>
                         {canManageCargos && (
                           <div className="flex gap-1">
@@ -226,41 +250,30 @@ export default function Page() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleEdit(cargo)}
-                              className="h-8 w-8 hover:bg-[#2F5E9A]/10"
+                              className="hover:bg-white/10"
                             >
-                              <Pencil className="h-4 w-4 text-[#2F5E9A]" />
+                              <Pencil className="h-4 w-4 text-[#5ee1ff]" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => handleDelete(cargo.id)}
-                              className="h-8 w-8 hover:bg-red-50"
+                              className="hover:bg-red-500/10"
                             >
-                              <Trash2 className="h-4 w-4 text-red-600" />
+                              <Trash2 className="h-4 w-4 text-red-400" />
                             </Button>
                           </div>
                         )}
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div>
-                          <p className="text-sm text-[#2B2B2B]/70 mb-1">Asignado a:</p>
-                          <p className="font-semibold text-[#1C3A63]">{user ? user.nombre : "Sin asignar"}</p>
-                        </div>
-                        {cargo.observaciones && (
-                          <div>
-                            <p className="text-sm text-[#2B2B2B]/70 mb-1">Observaciones:</p>
-                            <p className="text-sm text-[#2B2B2B]">{cargo.observaciones}</p>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              })
+                      {cargo.observaciones && (
+                        <p className="text-sm text-slate-300 leading-relaxed">{cargo.observaciones}</p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             )}
-          </div>
+          </section>
         </div>
       </main>
     </div>

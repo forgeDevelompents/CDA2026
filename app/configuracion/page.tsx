@@ -202,17 +202,17 @@ export default function Page() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#E7ECF3]">
+    <div className="flex min-h-screen bg-transparent text-white">
       <Sidebar />
 
       <main className="flex-1 lg:ml-64 p-4 lg:p-8">
         <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Configuración</h1>
-              <p className="text-[#2B2B2B]/70 mt-1">Personaliza la aplicación</p>
+              <h1 className="text-3xl font-bold text-white text-balance">Configuración</h1>
+              <p className="text-slate-300 mt-1">Personaliza la aplicación</p>
             </div>
-            <Button onClick={handleSaveConfig} disabled={isSaving} className="bg-[#2F5E9A] hover:bg-[#1C3A63]">
+            <Button onClick={handleSaveConfig} disabled={isSaving} className="bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
               <Save className="h-4 w-4 mr-2" />
               {isSaving ? "Guardando..." : "Guardar Cambios"}
             </Button>

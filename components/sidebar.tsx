@@ -27,7 +27,6 @@ import type { SessionUser } from "@/lib/auth"
 
 const menuItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/informacion", label: "Información", icon: Info },
   { href: "/gastos", label: "Gastos", icon: Receipt },
   { href: "/calendario", label: "Calendario", icon: Calendar },
   { href: "/cargos", label: "Cargos", icon: Users },
@@ -96,35 +95,37 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen w-64 bg-[#1C3A63] text-white transition-transform duration-300 flex flex-col shadow-2xl",
+          "fixed top-0 left-0 z-40 h-screen w-64 text-white transition-transform duration-300 flex flex-col shadow-[0_20px_60px_rgba(5,10,25,0.6)]",
+          "bg-[linear-gradient(90deg,rgba(12,21,40,0.94) 0%,rgba(12,21,40,0.86) 70%,rgba(12,21,40,0.0) 100%)]",
+          "backdrop-blur-xl",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
       >
         {/* Logo section */}
-        <div className="p-6 border-b border-[#2F5E9A]/30">
+        <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-center mb-4">
             <div className="relative group">
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#8CB4E1] to-[#2F5E9A] opacity-30 blur-xl group-hover:opacity-50 transition-opacity duration-500" />
 
-              <div className="relative w-32 h-32 rounded-full bg-white p-3 shadow-[0_0_25px_rgba(140,180,225,0.35),0_0_40px_rgba(47,94,154,0.25)] ring-4 ring-white/15 group-hover:shadow-[0_0_35px_rgba(140,180,225,0.55),0_0_55px_rgba(47,94,154,0.35)] group-hover:scale-105 transition-all duration-500">
-                <div className="absolute inset-2 rounded-full border-2 border-[#8CB4E1]/30" />
-                <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
+              <div className="relative w-40 h-40 rounded-full bg-white/8 p-1.5 shadow-[0_0_30px_rgba(50,210,255,0.18),0_0_45px_rgba(124,125,255,0.25)] ring-4 ring-white/10 group-hover:shadow-[0_0_40px_rgba(50,210,255,0.35),0_0_70px_rgba(124,125,255,0.35)] group-hover:scale-105 transition-all duration-500">
+                <div className="absolute inset-1 rounded-full border border-white/12" />
+                <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white/5">
                   <Image
                     src={logoUrl || "/placeholder.svg"}
                     alt="CDA 2026"
-                    width={120}
-                    height={120}
-                    className="object-contain p-2"
+                    width={200}
+                    height={200}
+                    className="object-cover h-full w-full rounded-full mix-blend-screen"
                   />
                 </div>
-                <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-12 bg-gradient-to-b from-white/40 to-transparent rounded-full blur-md" />
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-12 bg-gradient-to-b from-white/30 to-transparent rounded-full blur-md" />
               </div>
             </div>
           </div>
           {user && (
             <div className="text-center">
-              <p className="text-sm font-medium text-[#8CB4E1]">{user.nombre}</p>
-              <p className="text-xs text-[#8CB4E1]/70 capitalize">{user.rol}</p>
+              <p className="text-sm font-medium text-[#a6e8ff]">{user.nombre}</p>
+              <p className="text-xs text-[#a6e8ff]/70 capitalize">{user.cargo || user.rol}</p>
             </div>
           )}
         </div>
@@ -144,11 +145,11 @@ export function Sidebar() {
                     className={cn(
                       "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group",
                       isActive
-                        ? "bg-[#2F5E9A] text-white shadow-lg"
-                        : "text-[#8CB4E1] hover:bg-[#2F5E9A]/50 hover:text-white",
+                        ? "bg-white/10 text-white shadow-[0_10px_30px_rgba(50,210,255,0.25)] border border-white/10"
+                        : "text-[#9ab7e5] hover:bg-white/5 hover:text-white",
                     )}
                   >
-                    <Icon className="h-5 w-5 transition-transform group-hover:scale-110" />
+                    <Icon className="h-5 w-5 transition-transform group-hover:scale-110 text-[#32d2ff]" />
                     <span className="font-medium">{item.label}</span>
                   </Link>
                 </li>
@@ -158,12 +159,12 @@ export function Sidebar() {
         </nav>
 
         {/* Footer actions */}
-        <div className="p-4 border-t border-[#2F5E9A]/30 space-y-2">
+        <div className="p-4 border-t border-white/10 space-y-2">
           {user?.rol === "admin" && (
             <Link
               href="/configuracion"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-[#8CB4E1] hover:bg-[#2F5E9A]/50 hover:text-white transition-all duration-200"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-[#9ab7e5] hover:bg-white/5 hover:text-white transition-all duration-200"
             >
               <Settings className="h-5 w-5" />
               <span className="font-medium">Configuración</span>
@@ -171,7 +172,7 @@ export function Sidebar() {
           )}
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#8CB4E1] hover:bg-red-600/80 hover:text-white transition-all duration-200"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#9ab7e5] hover:bg-red-600/80 hover:text-white transition-all duration-200"
           >
             <LogOut className="h-5 w-5" />
             <span className="font-medium">Cerrar Sesión</span>

@@ -5,7 +5,6 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Sidebar } from "@/components/sidebar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -202,28 +201,31 @@ export default function Page() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#E7ECF3]">
+    <div className="flex min-h-screen bg-gradient-to-br from-[#0a1224] via-[#0f1c36] to-[#090f1c] text-white">
       <Sidebar />
 
       <main className="flex-1 lg:ml-64 p-4 lg:p-8">
-        <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="max-w-6xl mx-auto space-y-8">
+          <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 flow-in">
             <div>
-              <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Votaciones</h1>
-              <p className="text-[#2B2B2B]/70 mt-1">Sistema de votación del grupo</p>
+              <p className="uppercase text-xs tracking-[0.2em] text-[#5ee1ff]">Participación</p>
+              <h1 className="text-3xl font-bold text-white text-balance">Votaciones</h1>
+              <p className="text-slate-300 mt-1">Sistema de votos interno</p>
             </div>
             {canManageVotaciones && (
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                  <Button className="bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                     <Plus className="h-4 w-4 mr-2" />
                     Nueva Votación
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto border-white/10 bg-white/5 text-white">
                   <DialogHeader>
-                    <DialogTitle className="text-[#1C3A63]">Nueva Votación</DialogTitle>
-                    <DialogDescription>Crea una nueva votación con múltiples opciones</DialogDescription>
+                    <DialogTitle className="text-white">Nueva Votación</DialogTitle>
+                    <DialogDescription className="text-slate-300">
+                      Crea una nueva votación con múltiples opciones
+                    </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -233,6 +235,7 @@ export default function Page() {
                         value={formData.titulo}
                         onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
                         required
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
@@ -242,6 +245,7 @@ export default function Page() {
                         value={formData.descripcion}
                         onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
                         rows={3}
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
@@ -254,6 +258,7 @@ export default function Page() {
                               onChange={(e) => updateOpcion(index, e.target.value)}
                               placeholder={`Opción ${index + 1}`}
                               required
+                              className="bg-white/5 border-white/10 text-white"
                             />
                             {formData.opciones.length > 2 && (
                               <Button type="button" variant="outline" size="icon" onClick={() => removeOpcion(index)}>
@@ -263,19 +268,13 @@ export default function Page() {
                           </div>
                         ))}
                       </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={addOpcion}
-                        className="mt-2 bg-transparent"
-                      >
+                      <Button type="button" variant="outline" size="sm" onClick={addOpcion} className="mt-2">
                         <Plus className="h-4 w-4 mr-2" />
                         Añadir Opción
                       </Button>
                     </div>
                     <div className="flex gap-2 pt-4">
-                      <Button type="submit" className="flex-1 bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                      <Button type="submit" className="flex-1 bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                         Crear Votación
                       </Button>
                       <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -286,135 +285,132 @@ export default function Page() {
                 </DialogContent>
               </Dialog>
             )}
-          </div>
+          </header>
 
-          {/* Votaciones Activas */}
           {votacionesActivas.length > 0 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-[#1C3A63]">Votaciones Activas</h2>
-              {votacionesActivas.map((votacion) => {
+            <section className="band p-4 md:p-6 space-y-4 flow-in">
+              <div className="flex items-center gap-2 text-sm text-slate-300">
+                <Vote className="h-5 w-5 text-[#5ee1ff]" />
+                Votaciones activas
+              </div>
+              {votacionesActivas.map((votacion, idx) => {
                 const results = getVotacionResults(votacion.id)
                 const userVote = getUserVote(votacion.id)
                 const hasVoted = hasUserVoted(votacion.id)
 
                 return (
-                  <Card key={votacion.id} className="border-[#8CB4E1]/20 bg-gradient-to-br from-white to-[#E7ECF3]/30">
-                    <CardHeader>
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <CardTitle className="text-xl text-[#1C3A63] flex items-center gap-2 text-balance">
-                            <Vote className="h-5 w-5 text-[#2F5E9A]" />
-                            {votacion.titulo}
-                          </CardTitle>
-                          {votacion.descripcion && (
-                            <p className="text-sm text-[#2B2B2B]/70 mt-2">{votacion.descripcion}</p>
-                          )}
-                        </div>
-                        {canManageVotaciones && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleCerrarVotacion(votacion.id)}
-                            className="flex-shrink-0"
-                          >
-                            Cerrar Votación
-                          </Button>
-                        )}
+                  <div
+                    key={votacion.id}
+                    className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3 flow-in"
+                    style={{ animationDelay: `${0.04 * idx}s` }}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <p className="text-xs uppercase tracking-[0.2em] text-[#5ee1ff]">Activa</p>
+                        <h3 className="text-xl font-semibold text-white">{votacion.titulo}</h3>
+                        {votacion.descripcion && <p className="text-slate-300 text-sm">{votacion.descripcion}</p>}
                       </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
+                      {canManageVotaciones && (
+                        <Button variant="outline" size="sm" onClick={() => handleCerrarVotacion(votacion.id)}>
+                          Cerrar
+                        </Button>
+                      )}
+                    </div>
+                    <div className="space-y-3">
                       {results.map(({ opcion, votos, porcentaje }) => (
                         <div key={opcion.id} className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 flex-1">
-                              {hasVoted ? (
-                                <div className="flex items-center gap-2 flex-1">
-                                  {userVote?.opcion_id === opcion.id && (
-                                    <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
-                                  )}
-                                  <span className="text-sm text-[#2B2B2B] font-medium">{opcion.texto}</span>
-                                </div>
-                              ) : (
-                                <Button
-                                  variant="outline"
-                                  className="w-full justify-start hover:bg-[#2F5E9A]/10 hover:border-[#2F5E9A] bg-transparent"
-                                  onClick={() => handleVote(votacion.id, opcion.id)}
-                                >
-                                  {opcion.texto}
-                                </Button>
-                              )}
-                            </div>
+                          <div className="flex items-center justify-between gap-2">
+                            {hasVoted ? (
+                              <div className="flex items-center gap-2 flex-1">
+                                {userVote?.opcion_id === opcion.id && (
+                                  <CheckCircle2 className="h-4 w-4 text-[#5ee1ff]" />
+                                )}
+                                <span className="text-white">{opcion.texto}</span>
+                              </div>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                className="flex-1 justify-start bg-transparent hover:bg-white/10"
+                                onClick={() => handleVote(votacion.id, opcion.id)}
+                              >
+                                {opcion.texto}
+                              </Button>
+                            )}
                             {hasVoted && (
-                              <span className="text-sm font-semibold text-[#1C3A63] ml-2">
+                              <span className="text-sm text-slate-300">
                                 {votos} ({porcentaje.toFixed(0)}%)
                               </span>
                             )}
                           </div>
                           {hasVoted && (
-                            <div className="w-full bg-[#E7ECF3] rounded-full h-2 overflow-hidden">
+                            <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
                               <div
-                                className="bg-[#2F5E9A] h-full rounded-full transition-all duration-500 ease-out"
+                                className="bg-[#32d2ff] h-full rounded-full transition-all duration-500"
                                 style={{ width: `${porcentaje}%` }}
                               />
                             </div>
                           )}
                         </div>
                       ))}
-                      <div className="pt-2 text-xs text-[#2B2B2B]/60">
-                        Total de votos: {results.reduce((sum, r) => sum + r.votos, 0)}
-                      </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      Total de votos: {results.reduce((sum, r) => sum + r.votos, 0)}
+                    </div>
+                  </div>
                 )
               })}
-            </div>
+            </section>
           )}
 
-          {/* Votaciones Cerradas */}
           {votacionesCerradas.length > 0 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-[#1C3A63]">Historial de Votaciones</h2>
-              {votacionesCerradas.map((votacion) => {
-                const results = getVotacionResults(votacion.id)
+            <section className="band p-4 md:p-6 space-y-3 flow-in flow-in-delay-2">
+              <div className="flex items-center gap-2 text-sm text-slate-300">
+                <Clock className="h-5 w-5 text-[#5ee1ff]" />
+                Historial de votaciones
+              </div>
+              <div className="space-y-3">
+                {votacionesCerradas.map((votacion, idx) => {
+                  const results = getVotacionResults(votacion.id)
 
-                return (
-                  <Card key={votacion.id} className="border-[#8CB4E1]/20 opacity-75">
-                    <CardHeader>
-                      <CardTitle className="text-lg text-[#1C3A63] flex items-center gap-2 text-balance">
-                        <Clock className="h-5 w-5 text-[#2B2B2B]/50" />
-                        {votacion.titulo}
-                        <span className="text-xs font-normal text-[#2B2B2B]/60">(Cerrada)</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {results.map(({ opcion, votos, porcentaje }) => (
-                        <div key={opcion.id} className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-[#2B2B2B]">{opcion.texto}</span>
-                            <span className="text-sm font-semibold text-[#1C3A63]">
-                              {votos} ({porcentaje.toFixed(0)}%)
-                            </span>
+                  return (
+                    <div
+                      key={votacion.id}
+                      className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3 flow-in"
+                      style={{ animationDelay: `${0.04 * idx}s` }}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-lg font-semibold text-white">{votacion.titulo}</h3>
+                        <span className="text-xs text-slate-400">Cerrada</span>
+                      </div>
+                      <div className="space-y-2">
+                        {results.map(({ opcion, votos, porcentaje }) => (
+                          <div key={opcion.id} className="space-y-1">
+                            <div className="flex items-center justify-between text-sm text-slate-200">
+                              <span>{opcion.texto}</span>
+                              <span className="font-semibold text-white">
+                                {votos} ({porcentaje.toFixed(0)}%)
+                              </span>
+                            </div>
+                            <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                              <div
+                                className="bg-white/30 h-full rounded-full transition-all duration-500"
+                                style={{ width: `${porcentaje}%` }}
+                              />
+                            </div>
                           </div>
-                          <div className="w-full bg-[#E7ECF3] rounded-full h-2">
-                            <div className="bg-[#2B2B2B]/30 h-full rounded-full" style={{ width: `${porcentaje}%` }} />
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                )
-              })}
-            </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
           )}
 
-          {isLoading && <p className="text-center text-[#2B2B2B]/60 py-8">Cargando votaciones...</p>}
+          {isLoading && <p className="text-center text-slate-400">Cargando votaciones...</p>}
 
           {!isLoading && votaciones.length === 0 && (
-            <Card className="border-[#8CB4E1]/20">
-              <CardContent className="py-12">
-                <p className="text-center text-[#2B2B2B]/60">No hay votaciones disponibles</p>
-              </CardContent>
-            </Card>
+            <section className="band p-6 text-center text-slate-400">No hay votaciones disponibles</section>
           )}
         </div>
       </main>

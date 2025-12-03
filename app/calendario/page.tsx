@@ -5,7 +5,6 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Sidebar } from "@/components/sidebar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -125,15 +124,16 @@ export default function Page() {
   const pastEvents = eventos.filter((e) => e.fecha_inicio < now)
 
   return (
-    <div className="flex min-h-screen bg-[#E7ECF3]">
+    <div className="flex min-h-screen bg-gradient-to-br from-[#0a1224] via-[#0f1c36] to-[#090f1c] text-white">
       <Sidebar />
 
       <main className="flex-1 lg:ml-64 p-4 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 flow-in">
             <div>
-              <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Calendario</h1>
-              <p className="text-[#2B2B2B]/70 mt-1">Eventos y actividades del grupo</p>
+              <p className="uppercase text-xs tracking-[0.2em] text-[#5ee1ff]">Agenda</p>
+              <h1 className="text-3xl font-bold text-white text-balance">Calendario</h1>
+              <p className="text-slate-300 mt-1">Eventos y actividades del grupo</p>
             </div>
             {canManageCalendario && (
               <Dialog
@@ -144,17 +144,17 @@ export default function Page() {
                 }}
               >
                 <DialogTrigger asChild>
-                  <Button className="bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                  <Button className="bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                     <Plus className="h-4 w-4 mr-2" />
                     Nuevo Evento
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto border-white/10 bg-white/5 text-white">
                   <DialogHeader>
-                    <DialogTitle className="text-[#1C3A63]">
+                    <DialogTitle className="text-white">
                       {editingEvento ? "Editar Evento" : "Nuevo Evento"}
                     </DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className="text-slate-300">
                       {editingEvento ? "Modifica los datos del evento" : "Añade un nuevo evento al calendario"}
                     </DialogDescription>
                   </DialogHeader>
@@ -166,6 +166,7 @@ export default function Page() {
                         value={formData.titulo}
                         onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
                         required
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
@@ -175,6 +176,7 @@ export default function Page() {
                         value={formData.descripcion}
                         onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
                         rows={3}
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
@@ -185,6 +187,7 @@ export default function Page() {
                         value={formData.fecha_inicio}
                         onChange={(e) => setFormData({ ...formData, fecha_inicio: e.target.value })}
                         required
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
@@ -194,6 +197,7 @@ export default function Page() {
                         type="datetime-local"
                         value={formData.fecha_fin}
                         onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })}
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
@@ -203,6 +207,7 @@ export default function Page() {
                         value={formData.ubicacion}
                         onChange={(e) => setFormData({ ...formData, ubicacion: e.target.value })}
                         placeholder="Ej: Plaza del Ayuntamiento"
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
@@ -212,10 +217,11 @@ export default function Page() {
                         value={formData.tipo}
                         onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
                         placeholder="Ej: Reunión, Celebración, Actividad..."
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div className="flex gap-2 pt-4">
-                      <Button type="submit" className="flex-1 bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                      <Button type="submit" className="flex-1 bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                         {editingEvento ? "Guardar Cambios" : "Crear Evento"}
                       </Button>
                       <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -228,121 +234,109 @@ export default function Page() {
             )}
           </div>
 
-          {/* Próximos Eventos */}
-          <Card className="border-[#8CB4E1]/20">
-            <CardHeader>
-              <CardTitle className="text-lg text-[#1C3A63] flex items-center gap-2">
-                <CalendarIcon className="h-5 w-5 text-[#2F5E9A]" />
-                Próximos Eventos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <p className="text-center text-[#2B2B2B]/60 py-8">Cargando eventos...</p>
-              ) : upcomingEvents.length === 0 ? (
-                <p className="text-center text-[#2B2B2B]/60 py-8">No hay eventos próximos</p>
-              ) : (
-                <div className="grid gap-4">
-                  {upcomingEvents.map((evento) => (
-                    <div
-                      key={evento.id}
-                      className="p-4 rounded-lg border border-[#8CB4E1]/20 bg-gradient-to-br from-white to-[#E7ECF3]/30 hover-lift"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 space-y-2">
-                          <h3 className="text-lg font-semibold text-[#1C3A63]">{evento.titulo}</h3>
-                          {evento.descripcion && <p className="text-sm text-[#2B2B2B]/70">{evento.descripcion}</p>}
-                          <div className="flex flex-wrap gap-4 text-sm text-[#2B2B2B]/70">
-                            <div className="flex items-center gap-1">
-                              <CalendarIcon className="h-4 w-4 text-[#2F5E9A]" />
-                              {new Date(evento.fecha_inicio).toLocaleString("es-ES", {
-                                dateStyle: "medium",
-                                timeStyle: "short",
-                              })}
-                            </div>
-                            {evento.ubicacion && (
-                              <div className="flex items-center gap-1">
-                                <MapPin className="h-4 w-4 text-[#2F5E9A]" />
-                                {evento.ubicacion}
-                              </div>
-                            )}
-                            {evento.tipo && (
-                              <span className="px-2 py-1 bg-[#2F5E9A]/10 text-[#1C3A63] rounded-md text-xs">
-                                {evento.tipo}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        {canManageCalendario && (
-                          <div className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleEdit(evento)}
-                              className="hover:bg-[#2F5E9A]/10"
-                            >
-                              <Pencil className="h-4 w-4 text-[#2F5E9A]" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDelete(evento.id)}
-                              className="hover:bg-red-50"
-                            >
-                              <Trash2 className="h-4 w-4 text-red-600" />
-                            </Button>
-                          </div>
-                        )}
+          <section className="band p-4 md:p-6 space-y-4 flow-in">
+            <div className="flex items-center gap-2 text-sm text-slate-300">
+              <CalendarIcon className="h-5 w-5 text-[#5ee1ff]" />
+              Próximos eventos
+            </div>
+            {isLoading ? (
+              <p className="text-slate-400">Cargando eventos...</p>
+            ) : upcomingEvents.length === 0 ? (
+              <p className="text-slate-400">No hay eventos próximos</p>
+            ) : (
+              <div className="space-y-3">
+                {upcomingEvents.map((evento, idx) => (
+                  <div
+                    key={evento.id}
+                    className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-2 flow-in"
+                    style={{ animationDelay: `${0.05 * idx}s` }}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <p className="text-xs uppercase tracking-[0.2em] text-[#5ee1ff]">
+                          {evento.tipo || "Evento"}
+                        </p>
+                        <h3 className="text-xl font-semibold text-white">{evento.titulo}</h3>
+                        {evento.descripcion && <p className="text-slate-300 text-sm">{evento.descripcion}</p>}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Eventos Pasados */}
-          {pastEvents.length > 0 && (
-            <Card className="border-[#8CB4E1]/20">
-              <CardHeader>
-                <CardTitle className="text-lg text-[#1C3A63]">Eventos Pasados</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  {pastEvents.slice(0, 5).map((evento) => (
-                    <div
-                      key={evento.id}
-                      className="p-4 rounded-lg border border-[#8CB4E1]/20 bg-[#E7ECF3]/30 opacity-75"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 space-y-2">
-                          <h3 className="text-lg font-semibold text-[#1C3A63]">{evento.titulo}</h3>
-                          <div className="flex flex-wrap gap-4 text-sm text-[#2B2B2B]/70">
-                            <div className="flex items-center gap-1">
-                              <CalendarIcon className="h-4 w-4 text-[#2F5E9A]" />
-                              {new Date(evento.fecha_inicio).toLocaleString("es-ES", {
-                                dateStyle: "medium",
-                                timeStyle: "short",
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                        {canManageCalendario && (
+                      {canManageCalendario && (
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(evento)}
+                            className="hover:bg-white/10"
+                          >
+                            <Pencil className="h-4 w-4 text-[#5ee1ff]" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDelete(evento.id)}
-                            className="hover:bg-red-50"
+                            className="hover:bg-red-500/10"
                           >
-                            <Trash2 className="h-4 w-4 text-red-600" />
+                            <Trash2 className="h-4 w-4 text-red-400" />
                           </Button>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <div className="flex flex-wrap gap-4 text-sm text-slate-300">
+                      <span className="flex items-center gap-2">
+                        <CalendarIcon className="h-4 w-4 text-[#5ee1ff]" />
+                        {new Date(evento.fecha_inicio).toLocaleString("es-ES", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
+                      </span>
+                      {evento.ubicacion && (
+                        <span className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-[#5ee1ff]" />
+                          {evento.ubicacion}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {pastEvents.length > 0 && (
+            <section className="band p-4 md:p-6 space-y-4 flow-in flow-in-delay-2">
+              <div className="flex items-center gap-2 text-sm text-slate-300">
+                <CalendarIcon className="h-5 w-5 text-[#5ee1ff]" />
+                Eventos pasados
+              </div>
+              <div className="space-y-2">
+                {pastEvents.slice(0, 6).map((evento, idx) => (
+                  <div
+                    key={evento.id}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white/5 border border-white/10 rounded-xl p-3"
+                    style={{ animationDelay: `${0.05 * idx}s` }}
+                  >
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-white">{evento.titulo}</p>
+                      <p className="text-xs text-slate-400">
+                        {new Date(evento.fecha_inicio).toLocaleString("es-ES", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
+                      </p>
+                    </div>
+                    {canManageCalendario && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(evento.id)}
+                        className="hover:bg-red-500/10"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-400" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
           )}
         </div>
       </main>

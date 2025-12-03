@@ -5,7 +5,6 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Sidebar } from "@/components/sidebar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -104,15 +103,16 @@ export default function Page() {
   const canManageNormas = hasPermission(currentUser, "normas:manage")
 
   return (
-    <div className="flex min-h-screen bg-[#E7ECF3]">
+    <div className="flex min-h-screen bg-gradient-to-br from-[#0a1224] via-[#0f1c36] to-[#090f1c] text-white">
       <Sidebar />
 
       <main className="flex-1 lg:ml-64 p-4 lg:p-8">
-        <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="max-w-5xl mx-auto space-y-8">
+          <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 flow-in">
             <div>
-              <h1 className="text-3xl font-bold text-[#1C3A63] text-balance">Normas Internas</h1>
-              <p className="text-[#2B2B2B]/70 mt-1">Reglas y directrices del grupo</p>
+              <p className="uppercase text-xs tracking-[0.2em] text-[#5ee1ff]">Convivencia</p>
+              <h1 className="text-3xl font-bold text-white text-balance">Normas Internas</h1>
+              <p className="text-slate-300 mt-1">Reglas y directrices del grupo</p>
             </div>
             {canManageNormas && (
               <Dialog
@@ -123,17 +123,15 @@ export default function Page() {
                 }}
               >
                 <DialogTrigger asChild>
-                  <Button className="bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                  <Button className="bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                     <Plus className="h-4 w-4 mr-2" />
                     Nueva Norma
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md border-white/10 bg-white/5 text-white">
                   <DialogHeader>
-                    <DialogTitle className="text-[#1C3A63]">
-                      {editingNorma ? "Editar Norma" : "Nueva Norma"}
-                    </DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="text-white">{editingNorma ? "Editar Norma" : "Nueva Norma"}</DialogTitle>
+                    <DialogDescription className="text-slate-300">
                       {editingNorma ? "Modifica el contenido de la norma" : "Añade una nueva norma interna"}
                     </DialogDescription>
                   </DialogHeader>
@@ -145,6 +143,7 @@ export default function Page() {
                         value={formData.titulo}
                         onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
                         required
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div>
@@ -155,10 +154,11 @@ export default function Page() {
                         onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
                         rows={5}
                         required
+                        className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
                     <div className="flex gap-2 pt-4">
-                      <Button type="submit" className="flex-1 bg-[#2F5E9A] hover:bg-[#1C3A63]">
+                      <Button type="submit" className="flex-1 bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]">
                         {editingNorma ? "Guardar Cambios" : "Crear Norma"}
                       </Button>
                       <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -169,28 +169,31 @@ export default function Page() {
                 </DialogContent>
               </Dialog>
             )}
-          </div>
+          </header>
 
-          {/* Normas List */}
-          <div className="grid gap-4">
+          <section className="band p-4 md:p-6 space-y-4 flow-in flow-in-delay-2">
+            <div className="flex items-center gap-2 text-sm text-slate-300">
+              <Shield className="h-5 w-5 text-[#5ee1ff]" />
+              Normas activas
+            </div>
             {isLoading ? (
-              <p className="text-center text-[#2B2B2B]/60 py-8">Cargando normas...</p>
+              <p className="text-slate-400">Cargando normas...</p>
             ) : normas.length === 0 ? (
-              <p className="text-center text-[#2B2B2B]/60 py-8">No hay normas registradas</p>
+              <p className="text-slate-400">No hay normas registradas</p>
             ) : (
-              normas.map((norma, index) => (
-                <Card key={norma.id} className="hover-lift border-[#8CB4E1]/20">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-start gap-3 flex-1">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#2F5E9A]/10 flex-shrink-0">
-                          <Shield className="h-5 w-5 text-[#2F5E9A]" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <CardTitle className="text-lg text-[#1C3A63] text-balance">
-                            {index + 1}. {norma.titulo}
-                          </CardTitle>
-                        </div>
+              <div className="space-y-3">
+                {normas.map((norma, index) => (
+                  <div
+                    key={norma.id}
+                    className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-2 flow-in"
+                    style={{ animationDelay: `${0.04 * index}s` }}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <p className="text-xs uppercase tracking-[0.25em] text-[#5ee1ff]">
+                          #{String(index + 1).padStart(2, "0")}
+                        </p>
+                        <h3 className="text-lg font-semibold text-white">{norma.titulo}</h3>
                       </div>
                       {canManageNormas && (
                         <div className="flex gap-1 flex-shrink-0">
@@ -198,29 +201,27 @@ export default function Page() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleEdit(norma)}
-                            className="hover:bg-[#2F5E9A]/10"
+                            className="hover:bg-white/10"
                           >
-                            <Pencil className="h-4 w-4 text-[#2F5E9A]" />
+                            <Pencil className="h-4 w-4 text-[#5ee1ff]" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDelete(norma.id)}
-                            className="hover:bg-red-50"
+                            className="hover:bg-red-500/10"
                           >
-                            <Trash2 className="h-4 w-4 text-red-600" />
+                            <Trash2 className="h-4 w-4 text-red-400" />
                           </Button>
                         </div>
                       )}
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-[#2B2B2B] leading-relaxed whitespace-pre-wrap">{norma.descripcion}</p>
-                  </CardContent>
-                </Card>
-              ))
+                    <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">{norma.descripcion}</p>
+                  </div>
+                ))}
+              </div>
             )}
-          </div>
+          </section>
         </div>
       </main>
     </div>

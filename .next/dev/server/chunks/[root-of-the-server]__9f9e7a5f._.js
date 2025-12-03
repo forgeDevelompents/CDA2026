@@ -90,7 +90,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$ts__$5b$middl
 async function updateSession(request) {
     const sessionUser = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$ts__$5b$middleware$5d$__$28$ecmascript$29$__["parseSession"])(request.cookies.get("simple_session")?.value);
     // Redirect to login if trying to access protected routes without authentication
-    if (!sessionUser && (request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/gastos") || request.nextUrl.pathname.startsWith("/calendario") || request.nextUrl.pathname.startsWith("/cargos") || request.nextUrl.pathname.startsWith("/normas") || request.nextUrl.pathname.startsWith("/votaciones") || request.nextUrl.pathname.startsWith("/documentos") || request.nextUrl.pathname.startsWith("/estadisticas") || request.nextUrl.pathname.startsWith("/asistencias") || request.nextUrl.pathname.startsWith("/informacion"))) {
+    if (!sessionUser && (request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/gastos") || request.nextUrl.pathname.startsWith("/calendario") || request.nextUrl.pathname.startsWith("/cargos") || request.nextUrl.pathname.startsWith("/normas") || request.nextUrl.pathname.startsWith("/votaciones") || request.nextUrl.pathname.startsWith("/documentos") || request.nextUrl.pathname.startsWith("/estadisticas") || request.nextUrl.pathname.startsWith("/asistencias"))) {
         const url = request.nextUrl.clone();
         url.pathname = "/auth/login";
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$middleware$5d$__$28$ecmascript$29$__["NextResponse"].redirect(url);
