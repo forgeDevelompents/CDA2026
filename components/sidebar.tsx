@@ -81,7 +81,8 @@ export function Sidebar() {
           variant="outline"
           size="icon"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="bg-white shadow-lg"
+          aria-label="Abrir menú"
+          className="bg-white/10 text-white border border-white/20 rounded-full p-2 backdrop-blur-lg shadow-[0_10px_30px_rgba(5,10,25,0.35)] hover:bg-white/20 hover:border-white/30 transition-all"
         >
           {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
