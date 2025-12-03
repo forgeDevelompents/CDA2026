@@ -1,6 +1,12 @@
 {
-  "/api/logout/route": "app/api/logout/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/login/route": "app/api/login/route.js",
   "/api/session/route": "app/api/session/route.js",
+  "/asistencias/page": "app/asistencias/page.js",
   "/auth/login/page": "app/auth/login/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/calendario/[id]/page": "app/calendario/[id]/page.js",
+  "/calendario/page": "app/calendario/page.js",
+  "/configuracion/page": "app/configuracion/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/page": "app/page.js"
 }

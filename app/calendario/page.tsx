@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Plus, Pencil, Trash2, CalendarIcon, MapPin } from "lucide-react"
+import Link from "next/link"
 import type { Evento } from "@/lib/types"
 import { useSession } from "@/hooks/use-session"
 import type { SessionUser } from "@/lib/auth"
@@ -246,56 +247,63 @@ export default function Page() {
             ) : (
               <div className="space-y-3">
                 {upcomingEvents.map((evento, idx) => (
-                  <div
-                    key={evento.id}
-                    className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-2 flow-in"
-                    style={{ animationDelay: `${0.05 * idx}s` }}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="space-y-1">
-                        <p className="text-xs uppercase tracking-[0.2em] text-[#5ee1ff]">
-                          {evento.tipo || "Evento"}
-                        </p>
-                        <h3 className="text-xl font-semibold text-white">{evento.titulo}</h3>
-                        {evento.descripcion && <p className="text-slate-300 text-sm">{evento.descripcion}</p>}
-                      </div>
-                      {canManageCalendario && (
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(evento)}
-                            className="hover:bg-white/10"
-                          >
-                            <Pencil className="h-4 w-4 text-[#5ee1ff]" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDelete(evento.id)}
-                            className="hover:bg-red-500/10"
-                          >
-                            <Trash2 className="h-4 w-4 text-red-400" />
-                          </Button>
+                  <Link href={`/calendario/${evento.id}`} className="no-underline">
+                    <div
+                      className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-2 flow-in hover:border-white/20 transition"
+                      style={{ animationDelay: `${0.05 * idx}s` }}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="space-y-1">
+                          <p className="text-xs uppercase tracking-[0.2em] text-[#5ee1ff]">
+                            {evento.tipo || "Evento"}
+                          </p>
+                          <h3 className="text-xl font-semibold text-white">{evento.titulo}</h3>
+                          {evento.descripcion && <p className="text-slate-300 text-sm">{evento.descripcion}</p>}
                         </div>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-4 text-sm text-slate-300">
-                      <span className="flex items-center gap-2">
-                        <CalendarIcon className="h-4 w-4 text-[#5ee1ff]" />
-                        {new Date(evento.fecha_inicio).toLocaleString("es-ES", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
-                      </span>
-                      {evento.ubicacion && (
+                        {canManageCalendario && (
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                handleEdit(evento)
+                              }}
+                              className="hover:bg-white/10"
+                            >
+                              <Pencil className="h-4 w-4 text-[#5ee1ff]" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                handleDelete(evento.id)
+                              }}
+                              className="hover:bg-red-500/10"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-400" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-4 text-sm text-slate-300">
                         <span className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-[#5ee1ff]" />
-                          {evento.ubicacion}
+                          <CalendarIcon className="h-4 w-4 text-[#5ee1ff]" />
+                          {new Date(evento.fecha_inicio).toLocaleString("es-ES", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          })}
                         </span>
-                      )}
+                        {evento.ubicacion && (
+                          <span className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-[#5ee1ff]" />
+                            {evento.ubicacion}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
