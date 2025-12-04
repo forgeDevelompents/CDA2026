@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 46, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/adrian/Desktop/CDA2026/app/api/logout/route.ts"],"sourcesContent":["import { NextResponse } from \"next/server\"\n\nexport async function POST() {\n  const response = NextResponse.json({ success: true })\n  response.cookies.set(\"simple_session\", \"\", { expires: new Date(0), path: \"/\" })\n  return response\n}\n"],"names":[],"mappings":";;;;AAAA;;AAEO,eAAe;IACpB,MAAM,WAAW,gJAAY,CAAC,IAAI,CAAC;QAAE,SAAS;IAAK;IACnD,SAAS,OAAO,CAAC,GAAG,CAAC,kBAAkB,IAAI;QAAE,SAAS,IAAI,KAAK;QAAI,MAAM;IAAI;IAC7E,OAAO;AACT"}}]
-}
