@@ -94,6 +94,7 @@ export default function Page() {
   const [ticketsDetalle, setTicketsDetalle] = useState<{ tipo: string; cantidad: number }[]>([])
   const [notasConfig, setNotasConfig] = useState("")
   const [editMode, setEditMode] = useState(false)
+  const [turnoUsuariosEdit, setTurnoUsuariosEdit] = useState<Record<string, string[]>>({})
 
   const canManage = hasPermission(sessionUser, "calendario:manage")
 
@@ -128,7 +129,11 @@ export default function Page() {
     setAsistencias((asisRes.data as Asistencia[]) || [])
     setUsers((usersRes.data as User[]) || [])
     setResponsables((respRes.data as Responsable[]) || [])
-    setTurnos((turnoRes.data as Turno[]) || [])
+    const fetchedTurnos = (turnoRes.data as Turno[]) || []
+    setTurnos(fetchedTurnos)
+    setTurnoUsuariosEdit(
+      Object.fromEntries(fetchedTurnos.map((t) => [t.id, (t.user_ids || []).filter(Boolean)]))
+    )
     const cfg = (configRes.data as ConfigEvento) || null
     setConfig(cfg)
     setTickets(cfg?.tickets_por_persona ?? null)
@@ -180,6 +185,29 @@ export default function Page() {
     fetchData()
     setSaving(false)
     setActionMessage("Turno añadido")
+  }
+
+  const handleUpdateTurnoUsuarios = async (turnoId: string) => {
+    if (!canManage) return
+    setSaving(true)
+    setActionMessage(null)
+    const supabase = createClient()
+    const turnoActual = turnos.find((t) => t.id === turnoId)
+    const userIds = turnoUsuariosEdit[turnoId] ?? turnoActual?.user_ids ?? []
+    const { error: turnErr } = await supabase
+      .from("evento_turnos")
+      .update({
+        user_ids: userIds.length ? userIds : null,
+      })
+      .eq("id", turnoId)
+    if (turnErr) {
+      setError(turnErr.message)
+      setSaving(false)
+      return
+    }
+    fetchData()
+    setSaving(false)
+    setActionMessage("Turno actualizado")
   }
 
   const handleSaveConfig = async () => {
@@ -514,37 +542,111 @@ export default function Page() {
               <p className="text-slate-400">Sin turnos registrados</p>
             ) : (
               <div className="space-y-2">
-                {turnos.map((t) => (
-                  <div key={t.id} className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap gap-3 items-center">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-white">{t.nombre}</p>
-                      <p className="text-xs text-slate-300">
-                        {t.inicio || "Sin inicio"} {t.inicio || t.fin ? "-" : ""} {t.fin || ""}
-                      </p>
-                    </div>
-                    <div className="text-sm text-slate-200 flex flex-wrap gap-2">
-                      {(t.user_ids || []).length === 0
-                        ? "Sin asignar"
-                        : (t.user_ids || []).map((id) => (
-                            <span key={id} className="px-2 py-1 rounded-full bg-white/10">
-                              {users.find((u) => u.id === id)?.nombre || "Desconocido"}
-                            </span>
-                          ))}
-                    </div>
-                    {canManage && editMode && (
-                      <div className="ml-auto">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteTurno(t.id)}
-                          className="hover:bg-red-500/10"
-                        >
-                          <Trash2 className="h-4 w-4 text-red-400" />
-                        </Button>
+                {turnos.map((t) => {
+                  const selectedUsers = turnoUsuariosEdit[t.id] ?? t.user_ids ?? []
+                  return (
+                    <div key={t.id} className="bg-white/5 border border-white/10 rounded-xl p-3 space-y-3">
+                      <div className="flex flex-wrap gap-3 items-center">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-white">{t.nombre}</p>
+                          <p className="text-xs text-slate-300">
+                            {t.inicio || "Sin inicio"} {t.inicio || t.fin ? "-" : ""} {t.fin || ""}
+                          </p>
+                        </div>
+                        <div className="text-sm text-slate-200 flex flex-wrap gap-2">
+                          {selectedUsers.length === 0
+                            ? "Sin asignar"
+                            : selectedUsers.map((id) => (
+                                <span key={id} className="px-2 py-1 rounded-full bg-white/10">
+                                  {users.find((u) => u.id === id)?.nombre || "Desconocido"}
+                                </span>
+                              ))}
+                        </div>
+                        {canManage && editMode && (
+                          <div className="ml-auto">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteTurno(t.id)}
+                              className="hover:bg-red-500/10"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-400" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                ))}
+
+                      {canManage && editMode && (
+                        <div className="flex flex-col gap-2">
+                          <div className="flex gap-2 flex-wrap items-center">
+                            <select
+                              value=""
+                              onChange={(e) => {
+                                const val = e.target.value
+                                if (!val) return
+                                setTurnoUsuariosEdit((prev) => {
+                                  const current = prev[t.id] ?? t.user_ids ?? []
+                                  if (current.includes(val)) return prev
+                                  return { ...prev, [t.id]: [...current, val] }
+                                })
+                              }}
+                              className="bg-white/5 border border-white/10 text-white rounded-md px-2 py-2 min-w-[180px]"
+                            >
+                              <option value="">Añadir persona</option>
+                              {users.map((u) => (
+                                <option key={u.id} value={u.id} className="bg-[#0a1224]">
+                                  {u.nombre}
+                                </option>
+                              ))}
+                            </select>
+                            {selectedUsers.length > 0 && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setTurnoUsuariosEdit((prev) => ({ ...prev, [t.id]: [] }))}
+                                className="border-white/20 text-white"
+                              >
+                                Limpiar personas
+                              </Button>
+                            )}
+                            <Button
+                              onClick={() => handleUpdateTurnoUsuarios(t.id)}
+                              disabled={saving}
+                              className="bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]"
+                            >
+                              <CheckCircle2 className="h-4 w-4 mr-2" />
+                              Guardar
+                            </Button>
+                          </div>
+                          {selectedUsers.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {selectedUsers.map((id) => (
+                                <span
+                                  key={id}
+                                  className="flex items-center gap-2 px-2 py-1 rounded-full bg-white/10 text-sm text-white"
+                                >
+                                  {users.find((u) => u.id === id)?.nombre || "Desconocido"}
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setTurnoUsuariosEdit((prev) => ({
+                                        ...prev,
+                                        [t.id]: (prev[t.id] ?? t.user_ids ?? []).filter((u) => u !== id),
+                                      }))
+                                    }
+                                    className="text-red-300 hover:text-red-200"
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             )}
           </section>

@@ -1,110 +1,31 @@
-[00:00:21.049] Server  LOG      ✓ Ready in 14s
-[00:00:51.751] Server  LOG      ○ Compiling / ...
-[00:00:59.560] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:59.814] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:00:59.814] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/auth/login","route":"/auth/login"}
-[00:00:59.814] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/auth/login color: rgb(120, 120, 120) color: inherit {"dp":"/auth/login","o":"http://localhost:3000/auth/login","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764799382583}
-[00:01:00.069] Browser WARN    Image with src "/logo-clavaris.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+[00:00:01.557] Server  LOG      ✓ Ready in 1159ms
+[00:00:33.202] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:33.351] Browser ERROR   unhandledRejection: Error: @supabase/ssr: Your project's URL and API key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+[00:00:33.583] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:33.583] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/auth/login","route":"/auth/login"}
+[00:00:33.583] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/auth/login color: rgb(120, 120, 120) color: inherit {"dp":"/auth/login","o":"http://localhost:3000/auth/login","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764850400031}
+[00:00:33.776] Browser WARN    Image with src "/logo-clavaris.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
 Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:01:11.955] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764799394726}
-[00:02:45.569] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764799488334}
-[00:03:55.110] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:03:55.355] Browser WARN    Image with src "/logo-clavaris.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:03:55.355] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:03:55.355] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/calendario","route":"/calendario"}
-[00:03:55.355] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764799558126}
-[00:05:05.554] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764799628325}
-[00:05:10.089] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764799632860}
-[00:08:45.293] Server  LOG      ✓ Compiled in 501ms
-[00:08:45.391] Browser ERROR   Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information. 
+[00:03:05.068] Server  LOG        Reload env: .env.local
+[00:04:05.442] Server  LOG        Reload env: .env.local
+[00:04:05.793] Server  LOG      ✓ Compiled in 255ms
+[00:04:24.547] Server  LOG        Reload env: .env.local
+[00:04:24.590] Server  LOG      ✓ Compiled in 8ms
+[00:04:35.352] Server  LOG        Reload env: .env.local
+[00:04:35.409] Server  LOG      ✓ Compiled in 9ms
+[00:06:09.105] Server  LOG        Reload env: .env.local
+[00:06:13.623] Server  LOG        Reload env: .env.local
+[00:07:02.651] Server  LOG        Reload env: .env.local
+[00:07:05.166] Server  LOG        Reload env: .env.local
+[00:07:16.574] Server  LOG        Reload env: .env.local
+[00:07:38.314] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764850824764}
+[00:09:38.443] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/gastos color: rgb(120, 120, 120) color: inherit {"dp":"/gastos","o":"http://localhost:3000/gastos","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764850944900}
+[00:09:39.417] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764850945874}
+[00:09:39.672] Browser ERROR   Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information. 
 
 Check the render method of `Page`. 
-[00:08:56.360] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:08:56.494] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:08:56.494] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","route":"/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5"}
-[00:08:56.494] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764799859263}
-[00:08:58.821] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:08:58.995] Browser WARN    Image with src "/logo-clavaris.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:08:58.995] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:08:58.995] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/calendario","route":"/calendario"}
-[00:08:58.995] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764799861773}
-[00:08:59.541] Browser ERROR   Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information. 
-
-Check the render method of `Page`. 
-[00:09:44.962] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:09:45.109] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:09:45.109] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","route":"/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5"}
-[00:09:45.109] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764799907887}
-[00:09:46.460] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:09:46.703] Browser WARN    Image with src "/logo-clavaris.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:09:46.703] Browser ERROR   Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information. 
-
-Check the render method of `Page`. 
-[00:09:46.703] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:09:46.703] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/calendario","route":"/calendario"}
-[00:09:46.703] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764799909477}
-[00:12:07.771] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:12:08.107] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:12:08.107] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","route":"/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5"}
-[00:12:08.107] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764800050887}
-[00:12:09.215] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:12:09.384] Browser WARN    Image with src "/logo-clavaris.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:12:09.384] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:12:09.384] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/calendario","route":"/calendario"}
-[00:12:09.384] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764800052161}
-[00:12:09.804] Browser ERROR   Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information. 
-
-Check the render method of `Page`. 
-[00:12:10.924] Server  LOG      ✓ Compiled in 627ms
-[00:12:23.306] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/[id]","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764800065914}
-[00:12:32.241] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/asistencias color: rgb(120, 120, 120) color: inherit {"dp":"/asistencias","o":"http://localhost:3000/asistencias","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764800075018}
-[00:12:46.813] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764800089582}
-[00:12:47.722] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/[id]","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764800090497}
-[00:16:02.911] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764800285685}
-[00:16:04.964] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/[id]","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764800287739}
-[00:17:13.026] Server  LOG      ✓ Compiled in 175ms
-[00:19:19.363] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:19:19.542] Browser WARN    Image with src "/logo-clavaris.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:19:19.542] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:19:19.542] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","route":"/calendario/[id]"}
-[00:19:19.542] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/[id]","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764800482321}
-[00:25:29.244] Server  LOG      ✓ Compiled in 427ms
-[00:28:08.136] Server  LOG      ✓ Compiled in 193ms
-[00:29:49.624] Server  LOG      ✓ Compiled in 410ms
-[00:32:02.299] Server  LOG      ✓ Compiled in 186ms
-[00:32:06.942] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764801249701}
-[00:32:07.193] Browser ERROR   Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information. 
-
-Check the render method of `Page`. 
-[00:32:27.746] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/[id]","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764801270514}
-[00:32:49.295] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/asistencias color: rgb(120, 120, 120) color: inherit {"dp":"/asistencias","o":"http://localhost:3000/asistencias","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764801292072}
-[00:33:04.634] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764801307406}
-[00:33:06.306] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/[id]","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764801309083}
-[00:33:24.537] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764801327307}
-[00:33:28.041] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764801330816}
-[00:33:29.707] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/[id]","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764801332485}
-[00:34:09.498] Server  LOG      ✓ Compiled in 382ms
-[00:34:53.893] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/configuracion color: rgb(120, 120, 120) color: inherit {"dp":"/configuracion","o":"http://localhost:3000/configuracion","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764801416667}
-[00:34:55.005] Browser WARN    Image with src "http://localhost:3000/logo-clavaris.jpg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
-[00:35:24.496] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764801447266}
-[00:35:25.724] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/[id]","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764801448494}
-[00:36:32.616] Server  LOG      ✓ Compiled in 203ms
-[00:37:55.882] Server  LOG      ✓ Compiled in 468ms
-[00:41:40.748] Server  LOG      ✓ Compiled in 198ms
-[00:47:27.772] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:47:28.039] Browser WARN    Image with src "/logo-clavaris.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:47:28.039] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:47:28.039] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","route":"/calendario/[id]"}
-[00:47:28.039] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/[id]","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764802170807}
-[00:48:25.869] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/configuracion color: rgb(120, 120, 120) color: inherit {"dp":"/configuracion","o":"http://localhost:3000/configuracion","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764802228645}
-[00:48:26.933] Browser WARN    Image with src "http://localhost:3000/logo-clavaris.jpg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
-[00:48:40.557] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario color: rgb(120, 120, 120) color: inherit {"dp":"/calendario","o":"http://localhost:3000/calendario","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764802243331}
-[00:48:40.774] Browser ERROR   Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information. 
-
-Check the render method of `Page`. 
+[00:09:46.785] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5 color: rgb(120, 120, 120) color: inherit {"dp":"/calendario/[id]","o":"http://localhost:3000/calendario/dd0c9566-a6a0-4bd9-a51f-d269f4312fd5","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1764850953243}
