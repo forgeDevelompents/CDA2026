@@ -721,6 +721,7 @@ function Page() {
     const [ticketsDetalle, setTicketsDetalle] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     const [notasConfig, setNotasConfig] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
     const [editMode, setEditMode] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [turnoUsuariosEdit, setTurnoUsuariosEdit] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({});
     const canManage = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["hasPermission"])(sessionUser, "calendario:manage");
     const asistentesConNombre = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMemo"])(()=>{
         return asistencias.map((a)=>({
@@ -760,7 +761,12 @@ function Page() {
         setAsistencias(asisRes.data || []);
         setUsers(usersRes.data || []);
         setResponsables(respRes.data || []);
-        setTurnos(turnoRes.data || []);
+        const fetchedTurnos = turnoRes.data || [];
+        setTurnos(fetchedTurnos);
+        setTurnoUsuariosEdit(Object.fromEntries(fetchedTurnos.map((t)=>[
+                t.id,
+                (t.user_ids || []).filter(Boolean)
+            ])));
         const cfg = configRes.data || null;
         setConfig(cfg);
         setTickets(cfg?.tickets_por_persona ?? null);
@@ -819,6 +825,25 @@ function Page() {
         fetchData();
         setSaving(false);
         setActionMessage("Turno añadido");
+    };
+    const handleUpdateTurnoUsuarios = async (turnoId)=>{
+        if (!canManage) return;
+        setSaving(true);
+        setActionMessage(null);
+        const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2f$client$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["createClient"])();
+        const turnoActual = turnos.find((t)=>t.id === turnoId);
+        const userIds = turnoUsuariosEdit[turnoId] ?? turnoActual?.user_ids ?? [];
+        const { error: turnErr } = await supabase.from("evento_turnos").update({
+            user_ids: userIds.length ? userIds : null
+        }).eq("id", turnoId);
+        if (turnErr) {
+            setError(turnErr.message);
+            setSaving(false);
+            return;
+        }
+        fetchData();
+        setSaving(false);
+        setActionMessage("Turno actualizado");
     };
     const handleSaveConfig = async ()=>{
         if (!canManage) return;
@@ -891,7 +916,7 @@ function Page() {
             children: [
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$sidebar$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Sidebar"], {}, void 0, false, {
                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                    lineNumber: 256,
+                    lineNumber: 284,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -901,18 +926,18 @@ function Page() {
                         children: "Cargando evento..."
                     }, void 0, false, {
                         fileName: "[project]/app/calendario/[id]/page.tsx",
-                        lineNumber: 258,
+                        lineNumber: 286,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                    lineNumber: 257,
+                    lineNumber: 285,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/calendario/[id]/page.tsx",
-            lineNumber: 255,
+            lineNumber: 283,
             columnNumber: 7
         }, this);
     }
@@ -922,7 +947,7 @@ function Page() {
             children: [
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$sidebar$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Sidebar"], {}, void 0, false, {
                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                    lineNumber: 267,
+                    lineNumber: 295,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -932,18 +957,18 @@ function Page() {
                         children: "No se encontró el evento."
                     }, void 0, false, {
                         fileName: "[project]/app/calendario/[id]/page.tsx",
-                        lineNumber: 269,
+                        lineNumber: 297,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                    lineNumber: 268,
+                    lineNumber: 296,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/calendario/[id]/page.tsx",
-            lineNumber: 266,
+            lineNumber: 294,
             columnNumber: 7
         }, this);
     }
@@ -952,7 +977,7 @@ function Page() {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$sidebar$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Sidebar"], {}, void 0, false, {
                 fileName: "[project]/app/calendario/[id]/page.tsx",
-                lineNumber: 277,
+                lineNumber: 305,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -976,14 +1001,14 @@ function Page() {
                                                     className: "h-4 w-4 mr-2"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 283,
+                                                    lineNumber: 311,
                                                     columnNumber: 17
                                                 }, this),
                                                 "Volver"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 282,
+                                            lineNumber: 310,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -991,7 +1016,7 @@ function Page() {
                                             children: evento.tipo || "Evento"
                                         }, void 0, false, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 286,
+                                            lineNumber: 314,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -999,7 +1024,7 @@ function Page() {
                                             children: evento.titulo
                                         }, void 0, false, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 287,
+                                            lineNumber: 315,
                                             columnNumber: 15
                                         }, this),
                                         evento.descripcion && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1007,7 +1032,7 @@ function Page() {
                                             children: evento.descripcion
                                         }, void 0, false, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 288,
+                                            lineNumber: 316,
                                             columnNumber: 38
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1020,7 +1045,7 @@ function Page() {
                                                             className: "h-4 w-4 text-[#5ee1ff]"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 291,
+                                                            lineNumber: 319,
                                                             columnNumber: 19
                                                         }, this),
                                                         new Date(evento.fecha_inicio).toLocaleString("es-ES", {
@@ -1033,7 +1058,7 @@ function Page() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 290,
+                                                    lineNumber: 318,
                                                     columnNumber: 17
                                                 }, this),
                                                 evento.ubicacion && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1043,26 +1068,26 @@ function Page() {
                                                             className: "h-4 w-4 text-[#5ee1ff]"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 300,
+                                                            lineNumber: 328,
                                                             columnNumber: 21
                                                         }, this),
                                                         evento.ubicacion
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 299,
+                                                    lineNumber: 327,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 289,
+                                            lineNumber: 317,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 281,
+                                    lineNumber: 309,
                                     columnNumber: 13
                                 }, this),
                                 canManage && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -1073,13 +1098,13 @@ function Page() {
                                     children: editMode ? "Cerrar edición" : "Editar"
                                 }, void 0, false, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 307,
+                                    lineNumber: 335,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                            lineNumber: 280,
+                            lineNumber: 308,
                             columnNumber: 11
                         }, this),
                         error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1087,7 +1112,7 @@ function Page() {
                             children: error
                         }, void 0, false, {
                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                            lineNumber: 318,
+                            lineNumber: 346,
                             columnNumber: 21
                         }, this),
                         actionMessage && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1095,7 +1120,7 @@ function Page() {
                             children: actionMessage
                         }, void 0, false, {
                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                            lineNumber: 319,
+                            lineNumber: 347,
                             columnNumber: 29
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -1108,14 +1133,14 @@ function Page() {
                                             className: "h-5 w-5 text-[#5ee1ff]"
                                         }, void 0, false, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 323,
+                                            lineNumber: 351,
                                             columnNumber: 15
                                         }, this),
                                         "Asistencias"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 322,
+                                    lineNumber: 350,
                                     columnNumber: 13
                                 }, this),
                                 asistencias.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1123,7 +1148,7 @@ function Page() {
                                     children: "Nadie ha respondido todavía"
                                 }, void 0, false, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 327,
+                                    lineNumber: 355,
                                     columnNumber: 15
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "grid grid-cols-1 sm:grid-cols-3 gap-3",
@@ -1139,7 +1164,7 @@ function Page() {
                                                     children: estado === "asistire" ? "Asistirán" : estado === "no_podre" ? "No podrán" : "Quizás"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 332,
+                                                    lineNumber: 360,
                                                     columnNumber: 21
                                                 }, this),
                                                 asistentesConNombre.filter((a)=>a.estado === estado).length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1147,7 +1172,7 @@ function Page() {
                                                     children: "Sin respuestas"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 336,
+                                                    lineNumber: 364,
                                                     columnNumber: 23
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "flex flex-wrap gap-2",
@@ -1156,29 +1181,29 @@ function Page() {
                                                             children: a.nombre
                                                         }, a.id, false, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 342,
+                                                            lineNumber: 370,
                                                             columnNumber: 29
                                                         }, this))
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 338,
+                                                    lineNumber: 366,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, estado, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 331,
+                                            lineNumber: 359,
                                             columnNumber: 19
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 329,
+                                    lineNumber: 357,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                            lineNumber: 321,
+                            lineNumber: 349,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -1194,14 +1219,14 @@ function Page() {
                                                     className: "h-5 w-5 text-[#5ee1ff]"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 357,
+                                                    lineNumber: 385,
                                                     columnNumber: 17
                                                 }, this),
                                                 "Responsables (altavoz, caja, etc.)"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 356,
+                                            lineNumber: 384,
                                             columnNumber: 15
                                         }, this),
                                         canManage && editMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1217,7 +1242,7 @@ function Page() {
                                                     className: "bg-white/5 border-white/10 text-white w-48"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 362,
+                                                    lineNumber: 390,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1233,7 +1258,7 @@ function Page() {
                                                             children: "Sin asignar"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 373,
+                                                            lineNumber: 401,
                                                             columnNumber: 21
                                                         }, this),
                                                         users.map((u)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1242,13 +1267,13 @@ function Page() {
                                                                 children: u.nombre
                                                             }, u.id, false, {
                                                                 fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                lineNumber: 375,
+                                                                lineNumber: 403,
                                                                 columnNumber: 23
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 368,
+                                                    lineNumber: 396,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1261,7 +1286,7 @@ function Page() {
                                                     className: "bg-white/5 border-white/10 text-white w-40"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 380,
+                                                    lineNumber: 408,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -1273,26 +1298,26 @@ function Page() {
                                                             className: "h-4 w-4 mr-1"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 387,
+                                                            lineNumber: 415,
                                                             columnNumber: 21
                                                         }, this),
                                                         " Añadir"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 386,
+                                                    lineNumber: 414,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 361,
+                                            lineNumber: 389,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 355,
+                                    lineNumber: 383,
                                     columnNumber: 13
                                 }, this),
                                 responsables.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1300,7 +1325,7 @@ function Page() {
                                     children: "Sin responsables asignados"
                                 }, void 0, false, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 393,
+                                    lineNumber: 421,
                                     columnNumber: 15
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "grid grid-cols-1 md:grid-cols-2 gap-3",
@@ -1314,14 +1339,14 @@ function Page() {
                                                             className: "h-4 w-4 text-[#5ee1ff]"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 399,
+                                                            lineNumber: 427,
                                                             columnNumber: 23
                                                         }, this),
                                                         resp.tipo
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 398,
+                                                    lineNumber: 426,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1329,7 +1354,7 @@ function Page() {
                                                     children: resp.user_id ? users.find((u)=>u.id === resp.user_id)?.nombre || "Desconocido" : "Sin asignar"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 402,
+                                                    lineNumber: 430,
                                                     columnNumber: 21
                                                 }, this),
                                                 resp.notas && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1337,7 +1362,7 @@ function Page() {
                                                     children: resp.notas
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 405,
+                                                    lineNumber: 433,
                                                     columnNumber: 36
                                                 }, this),
                                                 canManage && editMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1351,34 +1376,34 @@ function Page() {
                                                             className: "h-4 w-4 text-red-400"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 414,
+                                                            lineNumber: 442,
                                                             columnNumber: 27
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                        lineNumber: 408,
+                                                        lineNumber: 436,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 407,
+                                                    lineNumber: 435,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, resp.id, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 397,
+                                            lineNumber: 425,
                                             columnNumber: 19
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 395,
+                                    lineNumber: 423,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                            lineNumber: 354,
+                            lineNumber: 382,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -1394,14 +1419,14 @@ function Page() {
                                                     className: "h-5 w-5 text-[#5ee1ff]"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 427,
+                                                    lineNumber: 455,
                                                     columnNumber: 17
                                                 }, this),
                                                 "Turnos de caja / tareas"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 426,
+                                            lineNumber: 454,
                                             columnNumber: 15
                                         }, this),
                                         canManage && editMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1417,7 +1442,7 @@ function Page() {
                                                     className: "bg-white/5 border-white/10 text-white w-36"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 432,
+                                                    lineNumber: 460,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1430,7 +1455,7 @@ function Page() {
                                                     className: "bg-white/5 border-white/10 text-white"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 438,
+                                                    lineNumber: 466,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1443,7 +1468,7 @@ function Page() {
                                                     className: "bg-white/5 border-white/10 text-white"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 444,
+                                                    lineNumber: 472,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1472,7 +1497,7 @@ function Page() {
                                                                             children: "Añadir persona"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                            lineNumber: 464,
+                                                                            lineNumber: 492,
                                                                             columnNumber: 25
                                                                         }, this),
                                                                         users.map((u)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1481,13 +1506,13 @@ function Page() {
                                                                                 children: u.nombre
                                                                             }, u.id, false, {
                                                                                 fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                                lineNumber: 466,
+                                                                                lineNumber: 494,
                                                                                 columnNumber: 27
                                                                             }, this))
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                    lineNumber: 452,
+                                                                    lineNumber: 480,
                                                                     columnNumber: 23
                                                                 }, this),
                                                                 newTurno.user_ids.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -1501,13 +1526,13 @@ function Page() {
                                                                     children: "Limpiar"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                    lineNumber: 472,
+                                                                    lineNumber: 500,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 451,
+                                                            lineNumber: 479,
                                                             columnNumber: 21
                                                         }, this),
                                                         newTurno.user_ids.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1526,24 +1551,24 @@ function Page() {
                                                                             children: "×"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                            lineNumber: 490,
+                                                                            lineNumber: 518,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     ]
                                                                 }, id, true, {
                                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                    lineNumber: 485,
+                                                                    lineNumber: 513,
                                                                     columnNumber: 27
                                                                 }, this))
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 483,
+                                                            lineNumber: 511,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 450,
+                                                    lineNumber: 478,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -1555,26 +1580,26 @@ function Page() {
                                                             className: "h-4 w-4 mr-1"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 508,
+                                                            lineNumber: 536,
                                                             columnNumber: 21
                                                         }, this),
                                                         " Añadir"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 507,
+                                                    lineNumber: 535,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 431,
+                                            lineNumber: 459,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 425,
+                                    lineNumber: 453,
                                     columnNumber: 13
                                 }, this),
                                 turnos.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1582,98 +1607,233 @@ function Page() {
                                     children: "Sin turnos registrados"
                                 }, void 0, false, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 514,
+                                    lineNumber: 542,
                                     columnNumber: 15
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "space-y-2",
-                                    children: turnos.map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "bg-white/5 border border-white/10 rounded-xl p-3 flex flex-wrap gap-3 items-center",
+                                    children: turnos.map((t)=>{
+                                        const selectedUsers = turnoUsuariosEdit[t.id] ?? t.user_ids ?? [];
+                                        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "bg-white/5 border border-white/10 rounded-xl p-3 space-y-3",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "flex-1 min-w-0",
+                                                    className: "flex flex-wrap gap-3 items-center",
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-sm font-semibold text-white",
-                                                            children: t.nombre
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 520,
-                                                            columnNumber: 23
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-xs text-slate-300",
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex-1 min-w-0",
                                                             children: [
-                                                                t.inicio || "Sin inicio",
-                                                                " ",
-                                                                t.inicio || t.fin ? "-" : "",
-                                                                " ",
-                                                                t.fin || ""
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                    className: "text-sm font-semibold text-white",
+                                                                    children: t.nombre
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                    lineNumber: 551,
+                                                                    columnNumber: 27
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                    className: "text-xs text-slate-300",
+                                                                    children: [
+                                                                        t.inicio || "Sin inicio",
+                                                                        " ",
+                                                                        t.inicio || t.fin ? "-" : "",
+                                                                        " ",
+                                                                        t.fin || ""
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                    lineNumber: 552,
+                                                                    columnNumber: 27
+                                                                }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 521,
-                                                            columnNumber: 23
+                                                            lineNumber: 550,
+                                                            columnNumber: 25
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "text-sm text-slate-200 flex flex-wrap gap-2",
+                                                            children: selectedUsers.length === 0 ? "Sin asignar" : selectedUsers.map((id)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "px-2 py-1 rounded-full bg-white/10",
+                                                                    children: users.find((u)=>u.id === id)?.nombre || "Desconocido"
+                                                                }, id, false, {
+                                                                    fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                    lineNumber: 560,
+                                                                    columnNumber: 33
+                                                                }, this))
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                            lineNumber: 556,
+                                                            columnNumber: 25
+                                                        }, this),
+                                                        canManage && editMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "ml-auto",
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
+                                                                variant: "ghost",
+                                                                size: "icon",
+                                                                onClick: ()=>handleDeleteTurno(t.id),
+                                                                className: "hover:bg-red-500/10",
+                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trash$2d$2$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Trash2$3e$__["Trash2"], {
+                                                                    className: "h-4 w-4 text-red-400"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                    lineNumber: 573,
+                                                                    columnNumber: 31
+                                                                }, this)
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                lineNumber: 567,
+                                                                columnNumber: 29
+                                                            }, this)
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                            lineNumber: 566,
+                                                            columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 519,
-                                                    columnNumber: 21
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "text-sm text-slate-200 flex flex-wrap gap-2",
-                                                    children: (t.user_ids || []).length === 0 ? "Sin asignar" : (t.user_ids || []).map((id)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "px-2 py-1 rounded-full bg-white/10",
-                                                            children: users.find((u)=>u.id === id)?.nombre || "Desconocido"
-                                                        }, id, false, {
-                                                            fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 529,
-                                                            columnNumber: 29
-                                                        }, this))
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 525,
-                                                    columnNumber: 21
+                                                    lineNumber: 549,
+                                                    columnNumber: 23
                                                 }, this),
                                                 canManage && editMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "ml-auto",
-                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
-                                                        variant: "ghost",
-                                                        size: "icon",
-                                                        onClick: ()=>handleDeleteTurno(t.id),
-                                                        className: "hover:bg-red-500/10",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trash$2d$2$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Trash2$3e$__["Trash2"], {
-                                                            className: "h-4 w-4 text-red-400"
+                                                    className: "flex flex-col gap-2",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex gap-2 flex-wrap items-center",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                                    value: "",
+                                                                    onChange: (e)=>{
+                                                                        const val = e.target.value;
+                                                                        if (!val) return;
+                                                                        setTurnoUsuariosEdit((prev)=>{
+                                                                            const current = prev[t.id] ?? t.user_ids ?? [];
+                                                                            if (current.includes(val)) return prev;
+                                                                            return {
+                                                                                ...prev,
+                                                                                [t.id]: [
+                                                                                    ...current,
+                                                                                    val
+                                                                                ]
+                                                                            };
+                                                                        });
+                                                                    },
+                                                                    className: "bg-white/5 border border-white/10 text-white rounded-md px-2 py-2 min-w-[180px]",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                            value: "",
+                                                                            children: "Añadir persona"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                            lineNumber: 595,
+                                                                            columnNumber: 31
+                                                                        }, this),
+                                                                        users.map((u)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                                value: u.id,
+                                                                                className: "bg-[#0a1224]",
+                                                                                children: u.nombre
+                                                                            }, u.id, false, {
+                                                                                fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                                lineNumber: 597,
+                                                                                columnNumber: 33
+                                                                            }, this))
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                    lineNumber: 582,
+                                                                    columnNumber: 29
+                                                                }, this),
+                                                                selectedUsers.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
+                                                                    variant: "outline",
+                                                                    size: "sm",
+                                                                    onClick: ()=>setTurnoUsuariosEdit((prev)=>({
+                                                                                ...prev,
+                                                                                [t.id]: []
+                                                                            })),
+                                                                    className: "border-white/20 text-white",
+                                                                    children: "Limpiar personas"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                    lineNumber: 603,
+                                                                    columnNumber: 31
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
+                                                                    onClick: ()=>handleUpdateTurnoUsuarios(t.id),
+                                                                    disabled: saving,
+                                                                    className: "bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
+                                                                            className: "h-4 w-4 mr-2"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                            lineNumber: 617,
+                                                                            columnNumber: 31
+                                                                        }, this),
+                                                                        "Guardar"
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                    lineNumber: 612,
+                                                                    columnNumber: 29
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                            lineNumber: 581,
+                                                            columnNumber: 27
+                                                        }, this),
+                                                        selectedUsers.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex flex-wrap gap-2",
+                                                            children: selectedUsers.map((id)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "flex items-center gap-2 px-2 py-1 rounded-full bg-white/10 text-sm text-white",
+                                                                    children: [
+                                                                        users.find((u)=>u.id === id)?.nombre || "Desconocido",
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                            type: "button",
+                                                                            onClick: ()=>setTurnoUsuariosEdit((prev)=>({
+                                                                                        ...prev,
+                                                                                        [t.id]: (prev[t.id] ?? t.user_ids ?? []).filter((u)=>u !== id)
+                                                                                    })),
+                                                                            className: "text-red-300 hover:text-red-200",
+                                                                            children: "×"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                            lineNumber: 629,
+                                                                            columnNumber: 35
+                                                                        }, this)
+                                                                    ]
+                                                                }, id, true, {
+                                                                    fileName: "[project]/app/calendario/[id]/page.tsx",
+                                                                    lineNumber: 624,
+                                                                    columnNumber: 33
+                                                                }, this))
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 542,
-                                                            columnNumber: 27
+                                                            lineNumber: 622,
+                                                            columnNumber: 29
                                                         }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                        lineNumber: 536,
-                                                        columnNumber: 25
-                                                    }, this)
-                                                }, void 0, false, {
+                                                    ]
+                                                }, void 0, true, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 535,
-                                                    columnNumber: 23
+                                                    lineNumber: 580,
+                                                    columnNumber: 25
                                                 }, this)
                                             ]
                                         }, t.id, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 518,
-                                            columnNumber: 19
-                                        }, this))
+                                            lineNumber: 548,
+                                            columnNumber: 21
+                                        }, this);
+                                    })
                                 }, void 0, false, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 516,
+                                    lineNumber: 544,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                            lineNumber: 424,
+                            lineNumber: 452,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
@@ -1686,14 +1846,14 @@ function Page() {
                                             className: "h-5 w-5 text-[#5ee1ff]"
                                         }, void 0, false, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 554,
+                                            lineNumber: 656,
                                             columnNumber: 15
                                         }, this),
                                         "Tickets / notas generales"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 553,
+                                    lineNumber: 655,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1707,7 +1867,7 @@ function Page() {
                                                     children: "Tickets obligatorios por persona"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 559,
+                                                    lineNumber: 661,
                                                     columnNumber: 17
                                                 }, this),
                                                 canManage && editMode ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1718,20 +1878,20 @@ function Page() {
                                                     className: "bg-white/5 border-white/10 text-white"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 561,
+                                                    lineNumber: 663,
                                                     columnNumber: 19
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                     className: "text-lg font-semibold text-white",
                                                     children: tickets ?? "Sin definir"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 569,
+                                                    lineNumber: 671,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 558,
+                                            lineNumber: 660,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1742,7 +1902,7 @@ function Page() {
                                                     children: "Tipos de ticket"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 575,
+                                                    lineNumber: 677,
                                                     columnNumber: 17
                                                 }, this),
                                                 canManage && editMode ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1767,7 +1927,7 @@ function Page() {
                                                                         className: "bg-white/5 border-white/10 text-white col-span-3"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                        lineNumber: 580,
+                                                                        lineNumber: 682,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -1788,7 +1948,7 @@ function Page() {
                                                                         className: "bg-white/5 border-white/10 text-white col-span-1"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                        lineNumber: 590,
+                                                                        lineNumber: 692,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -1800,18 +1960,18 @@ function Page() {
                                                                             className: "h-4 w-4 text-red-400"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                            lineNumber: 608,
+                                                                            lineNumber: 710,
                                                                             columnNumber: 27
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                        lineNumber: 602,
+                                                                        lineNumber: 704,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, idx, true, {
                                                                 fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                                lineNumber: 579,
+                                                                lineNumber: 681,
                                                                 columnNumber: 23
                                                             }, this)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -1828,13 +1988,13 @@ function Page() {
                                                             children: "Añadir tipo"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 612,
+                                                            lineNumber: 714,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 577,
+                                                    lineNumber: 679,
                                                     columnNumber: 19
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "flex flex-wrap gap-2",
@@ -1847,25 +2007,25 @@ function Page() {
                                                             ]
                                                         }, idx, true, {
                                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                            lineNumber: 625,
+                                                            lineNumber: 727,
                                                             columnNumber: 25
                                                         }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                         className: "text-slate-200 text-sm",
                                                         children: "Sin tipos definidos"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                        lineNumber: 630,
+                                                        lineNumber: 732,
                                                         columnNumber: 23
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 622,
+                                                    lineNumber: 724,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 574,
+                                            lineNumber: 676,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1876,7 +2036,7 @@ function Page() {
                                                     children: "Notas"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 636,
+                                                    lineNumber: 738,
                                                     columnNumber: 17
                                                 }, this),
                                                 canManage && editMode ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$textarea$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Textarea"], {
@@ -1886,26 +2046,26 @@ function Page() {
                                                     className: "bg-white/5 border-white/10 text-white"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 638,
+                                                    lineNumber: 740,
                                                     columnNumber: 19
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                     className: "text-slate-200 text-sm leading-relaxed bg-white/5 border border-white/10 rounded-xl p-3",
                                                     children: notasConfig || "Sin notas"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                    lineNumber: 645,
+                                                    lineNumber: 747,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                                            lineNumber: 635,
+                                            lineNumber: 737,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 557,
+                                    lineNumber: 659,
                                     columnNumber: 13
                                 }, this),
                                 canManage && editMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1919,42 +2079,42 @@ function Page() {
                                                 className: "h-4 w-4 mr-2"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/calendario/[id]/page.tsx",
-                                                lineNumber: 654,
+                                                lineNumber: 756,
                                                 columnNumber: 19
                                             }, this),
                                             "Guardar"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/calendario/[id]/page.tsx",
-                                        lineNumber: 653,
+                                        lineNumber: 755,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                                    lineNumber: 652,
+                                    lineNumber: 754,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/calendario/[id]/page.tsx",
-                            lineNumber: 552,
+                            lineNumber: 654,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/calendario/[id]/page.tsx",
-                    lineNumber: 279,
+                    lineNumber: 307,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/calendario/[id]/page.tsx",
-                lineNumber: 278,
+                lineNumber: 306,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/calendario/[id]/page.tsx",
-        lineNumber: 276,
+        lineNumber: 304,
         columnNumber: 5
     }, this);
 }
