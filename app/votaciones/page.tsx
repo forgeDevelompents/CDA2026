@@ -317,41 +317,44 @@ export default function Page() {
                       )}
                     </div>
                     <div className="space-y-3">
-                      {results.map(({ opcion, votos, porcentaje }) => (
-                        <div key={opcion.id} className="space-y-2">
-                          <div className="flex items-center justify-between gap-2">
-                            {hasVoted ? (
-                              <div className="flex items-center gap-2 flex-1">
-                                {userVote?.opcion_id === opcion.id && (
-                                  <CheckCircle2 className="h-4 w-4 text-[#5ee1ff]" />
-                                )}
-                                <span className="text-white">{opcion.texto}</span>
-                              </div>
-                            ) : (
-                              <Button
-                                variant="outline"
-                                className="flex-1 justify-start bg-transparent hover:bg-white/10"
-                                onClick={() => handleVote(votacion.id, opcion.id)}
-                              >
-                                {opcion.texto}
-                              </Button>
-                            )}
-                            {hasVoted && (
-                              <span className="text-sm text-slate-300">
-                                {votos} ({porcentaje.toFixed(0)}%)
-                              </span>
-                            )}
-                          </div>
-                          {hasVoted && (
-                            <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
-                              <div
-                                className="bg-[#32d2ff] h-full rounded-full transition-all duration-500"
-                                style={{ width: `${porcentaje}%` }}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                      {results.map(({ opcion, votos, porcentaje }) => {
+  const isUserChoice = userVote?.opcion_id === opcion.id
+
+  return (
+    <div key={opcion.id} className="space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <Button
+          variant={isUserChoice ? "default" : "outline"}
+          className={`flex-1 justify-start ${
+            isUserChoice
+              ? "bg-[#32d2ff] text-[#0b1220] hover:bg-[#5ee1ff]"
+              : "bg-transparent hover:bg-white/10"
+          }`}
+          onClick={() => handleVote(votacion.id, opcion.id)}
+        >
+          {isUserChoice && <CheckCircle2 className="h-4 w-4 mr-2 text-[#0b1220]" />}
+          {opcion.texto}
+        </Button>
+
+        {hasVoted && (
+          <span className="text-sm text-slate-300">
+            {votos} ({porcentaje.toFixed(0)}%)
+          </span>
+        )}
+      </div>
+
+      {hasVoted && (
+        <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div
+            className="bg-[#32d2ff] h-full rounded-full transition-all duration-500"
+            style={{ width: `${porcentaje}%` }}
+          />
+        </div>
+      )}
+    </div>
+  )
+})}
+
                     </div>
                     <div className="text-xs text-slate-400">
                       Total de votos: {results.reduce((sum, r) => sum + r.votos, 0)}
